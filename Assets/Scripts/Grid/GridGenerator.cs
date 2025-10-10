@@ -12,13 +12,40 @@ namespace BusJamDemo.Grid
         //X
         public int ColumnCount;
         public float CellSize;
-
-        private void Start()
+        
+        public void GenerateGrid(int rows, int columns, float cellSize)
         {
-            GenerateGrid();
-        }
+            RowCount = rows;
+            ColumnCount = columns;
+            CellSize = cellSize;
 
-        private void GenerateGrid()
+            if (_gridCells != null)
+            {
+                //Destroy existing cells
+            }
+            
+            _gridCells = new CellData[RowCount, ColumnCount];
+            var gridWidth = CellSize * (ColumnCount - 1);
+            var gridHeight = CellSize * (RowCount - 1);
+            var centerOffset = new Vector3(gridWidth / 2, 0, gridHeight / 2);
+            
+            for (int i = 0; i < RowCount; i++)
+            {
+                for (int j = 0; j < ColumnCount; j++)
+                {
+                    var worldPosition = new Vector3(j * CellSize, 0, i * CellSize) - centerOffset;
+                    var cellPosition = new CellPosition(worldPosition, i, j);
+                    var cellData = new CellData(cellPosition);
+                    
+                    var cell = Instantiate(cellPrefab, worldPosition, Quaternion.identity, transform);
+                    cellData.FillCell(cell);
+                    
+                    _gridCells[i, j] = cellData;
+                }
+            }
+        }
+        
+        public void GenerateGrid()
         {
             _gridCells = new CellData[RowCount, ColumnCount];
             var gridWidth = CellSize * (ColumnCount - 1);

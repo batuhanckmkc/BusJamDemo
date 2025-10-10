@@ -92,8 +92,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f1dd150c5074bf5bbdc07f201492c52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawner: {fileID: 5625672799170011667}
-  levelData: {fileID: 11400000, guid: b8347de4d11a742d6b9e53cab233d0e3, type: 2}
+  gridGenerator: {fileID: 273104418305386992}
+  itemSpawner: {fileID: 5625672799170011667}
+  defaultCellSize: 1.1
+  currentLevelData: {fileID: 11400000, guid: b8347de4d11a742d6b9e53cab233d0e3, type: 2}
 --- !u!1 &6706360138294754160
 GameObject:
   m_ObjectHideFlags: 0
