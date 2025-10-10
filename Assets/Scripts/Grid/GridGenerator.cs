@@ -12,12 +12,12 @@ namespace BusJamDemo.Grid
         //X
         public int ColumnCount;
         public float CellSize;
-    
-        public void Awake()
+
+        private void Start()
         {
             GenerateGrid();
         }
-    
+
         private void GenerateGrid()
         {
             _gridCells = new CellData[RowCount, ColumnCount];
@@ -40,7 +40,7 @@ namespace BusJamDemo.Grid
             }
             // PrintCells();
         }
-
+        
         private void PrintCells()
         {
             for (int i = 0; i <= _gridCells.GetUpperBound(0); i++)
