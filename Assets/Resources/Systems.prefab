@@ -47,6 +47,51 @@ MonoBehaviour:
   targetLayer:
     serializedVersion: 2
     m_Bits: 8
+--- !u!1 &3521590308233889285
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 966435227286834146}
+  - component: {fileID: 5607168592665723121}
+  m_Layer: 0
+  m_Name: Path Finder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &966435227286834146
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3521590308233889285}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5150010823740406598}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5607168592665723121
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3521590308233889285}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942ad20b6a584da9a1bb4c677f0f0690, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  grid: {fileID: 273104418305386992}
 --- !u!1 &4146778230580253422
 GameObject:
   m_ObjectHideFlags: 0
@@ -58,7 +103,7 @@ GameObject:
   - component: {fileID: 533840464019431986}
   - component: {fileID: 273104418305386992}
   m_Layer: 0
-  m_Name: Grid Generator
+  m_Name: Grid Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -139,7 +184,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f1dd150c5074bf5bbdc07f201492c52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridGenerator: {fileID: 273104418305386992}
+  gridManager: {fileID: 273104418305386992}
   itemSpawner: {fileID: 5625672799170011667}
   defaultCellSize: 1.1
   currentLevelData: {fileID: 11400000, guid: b8347de4d11a742d6b9e53cab233d0e3, type: 2}
@@ -176,6 +221,7 @@ Transform:
   - {fileID: 7289508087261064731}
   - {fileID: 5262891035341783292}
   - {fileID: 8182495774031436812}
+  - {fileID: 966435227286834146}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7167946861976900241
@@ -222,7 +268,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88c45c57537445f3ac8914ff43331458, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridGenerator: {fileID: 273104418305386992}
+  gridManager: {fileID: 273104418305386992}
+  pathfinder: {fileID: 5607168592665723121}
   itemPrefabs:
   - {fileID: 4250074555462496017, guid: 3993f3e6567984ec28dd77f441af7bdf, type: 3}
   - {fileID: 7789739288362943648, guid: 625f36a4e438049738f9a19454b4a478, type: 3}

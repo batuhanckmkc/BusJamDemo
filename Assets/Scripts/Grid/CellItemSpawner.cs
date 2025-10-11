@@ -6,18 +6,18 @@ namespace BusJamDemo.Grid
 {
     public class CellItemSpawner : MonoBehaviour
     {
-        [SerializeField] private GridGenerator gridGenerator;
+        [SerializeField] private GridManager gridManager;
         [SerializeField] private CellItem[] itemPrefabs; 
 
         public CellItem SpawnItem(CellData_SO data, int row, int column, Transform parent)
         {
-            if (row < 0 || row >= gridGenerator.RowCount || column < 0 || column >= gridGenerator.ColumnCount)
+            if (row < 0 || row >= gridManager.RowCount || column < 0 || column >= gridManager.ColumnCount)
             {
                 Debug.LogWarning($"[Spawner] Invalid coordinates: ({row}, {column})");
                 return null;
             }
 
-            var cellData = gridGenerator[row, column];
+            var cellData = gridManager[row, column];
             if (cellData.HasItem)
             {
                 Debug.LogWarning($"[Spawner] Grid cell already occupied: ({row}, {column})");
@@ -32,10 +32,11 @@ namespace BusJamDemo.Grid
                 return null;
             }
 
-            var worldPos = cellData.GridPosition.WorldPosition;
+            var worldPos = cellData.CellPosition.WorldPosition;
             var cellItem = Instantiate(prefabToSpawn, worldPos, Quaternion.identity);
             cellItem.transform.SetParent(parent, true); 
             cellData.FillItem(cellItem);
+            cellItem.Initialize(cellData);
             return cellItem;
         }
 

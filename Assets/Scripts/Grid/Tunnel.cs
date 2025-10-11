@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace BusJamDemo.Grid
 {
-    public class Tunnel : CellItem, IClickable
+    public class Tunnel : CellItem, IClickable, IBlocker
     {
         public override void Perform()
         {

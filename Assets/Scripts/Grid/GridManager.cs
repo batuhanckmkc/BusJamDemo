@@ -1,8 +1,10 @@
+using System;
+using BusJamDemo.Utility;
 using UnityEngine;
 
 namespace BusJamDemo.Grid
 {
-    public class GridGenerator : MonoBehaviour
+    public class GridManager : MonoBehaviour
     {
         [SerializeField] private Cell cellPrefab;
         private CellData[,] _gridCells;
@@ -12,17 +14,24 @@ namespace BusJamDemo.Grid
         //X
         public int ColumnCount;
         public float CellSize;
-        
+
+        private void Awake()
+        {
+            EventManager<ItemPlaceData>.Subscribe(BoardEvents.OnCellItemPlaced, OnCellItemPlaced);
+            EventManager<ItemRemoveData>.Subscribe(BoardEvents.OnCellItemRemoved, OnCellItemRemoved);
+        }
+
+        private void OnDestroy()
+        {
+            EventManager<ItemPlaceData>.Unsubscribe(BoardEvents.OnCellItemPlaced, OnCellItemPlaced);
+            EventManager<ItemRemoveData>.Unsubscribe(BoardEvents.OnCellItemRemoved, OnCellItemRemoved);
+        }
+
         public void GenerateGrid(int rows, int columns, float cellSize)
         {
             RowCount = rows;
             ColumnCount = columns;
             CellSize = cellSize;
-
-            if (_gridCells != null)
-            {
-                //Destroy existing cells
-            }
             
             _gridCells = new CellData[RowCount, ColumnCount];
             var gridWidth = CellSize * (ColumnCount - 1);
@@ -65,18 +74,40 @@ namespace BusJamDemo.Grid
                     _gridCells[i, j] = cellData;
                 }
             }
-            // PrintCells();
         }
-        
-        private void PrintCells()
+
+        private void OnCellItemPlaced(ItemPlaceData placeData)
         {
-            for (int i = 0; i <= _gridCells.GetUpperBound(0); i++)
-            {
-                for (int j = 0; j <= _gridCells.GetUpperBound(1); j++)
-                {
-                    Debug.Log(_gridCells[i,j].GridPosition);
-                }
-            }
+            var itemPlacedCell = _gridCells[placeData.Coordinates.Row, placeData.Coordinates.Column];
+            itemPlacedCell.FillItem(placeData.PlacedItem);
+        }
+
+        private void OnCellItemRemoved(ItemRemoveData removeData)
+        {
+            var itemRemovedCell = _gridCells[removeData.Coordinates.Row, removeData.Coordinates.Column];
+            itemRemovedCell.EraseItem();
+        }
+    }
+    
+    public struct ItemPlaceData
+    {
+        public readonly CellItem PlacedItem;
+        public readonly CellPosition Coordinates;
+
+        public ItemPlaceData(CellItem placedItem, CellPosition coordinates)
+        {
+            PlacedItem = placedItem;
+            Coordinates = coordinates;
+        }
+    }
+        
+    public struct ItemRemoveData
+    {
+        public readonly CellPosition Coordinates;
+            
+        public ItemRemoveData(CellPosition coordinates)
+        {
+            Coordinates = coordinates;
         }
     }
 }

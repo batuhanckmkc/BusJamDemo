@@ -6,7 +6,7 @@ namespace BusJamDemo.LevelLoad
     public class LevelLoader : MonoBehaviour
     {
         [Header("Required References")]
-        [SerializeField] private GridGenerator gridGenerator;
+        [SerializeField] private GridManager gridManager;
         [SerializeField] private CellItemSpawner itemSpawner;
         [SerializeField] private float defaultCellSize = 1f;
         
@@ -25,7 +25,7 @@ namespace BusJamDemo.LevelLoad
             }
         }
 
-        public void LoadLevel(LevelData_SO levelData)
+        private void LoadLevel(LevelData_SO levelData)
         {
             if (levelData.GridCells == null)
             {
@@ -33,7 +33,7 @@ namespace BusJamDemo.LevelLoad
                 return;
             }
 
-            gridGenerator.GenerateGrid(levelData.Rows, levelData.Columns, defaultCellSize);
+            gridManager.GenerateGrid(levelData.Rows, levelData.Columns, defaultCellSize);
             
             int requiredLength = levelData.Rows * levelData.Columns;
 
@@ -55,7 +55,7 @@ namespace BusJamDemo.LevelLoad
                         cellData.LoadCell(null, i, j);
                         if (!(cellData is EmptyCell_SO))
                         {
-                            CellItem spawnedItem = itemSpawner.SpawnItem(cellData, i, j, gridGenerator.transform);
+                            CellItem spawnedItem = itemSpawner.SpawnItem(cellData, i, j, gridManager.transform);
                             if (spawnedItem != null)
                             {
                                 Debug.Log($"[LevelLoader] Item spawned: {cellData.CellTypeName} at ({i}, {j})");

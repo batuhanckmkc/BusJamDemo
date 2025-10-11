@@ -1,24 +1,38 @@
+using BusJamDemo.LevelLoad;
+
 namespace BusJamDemo.Grid
 {
     public class CellData
     {
         public bool HasItem => CellItem != null;
-        public Cell Grid { get; private set; }
+        public Cell Cell { get; private set; }
         public CellItem CellItem { get; private set; }
-        public CellPosition GridPosition { get; private set; }
-        public CellData(CellPosition gridPosition)
+        public CellPosition CellPosition { get; private set; }
+        public CellData_SO SourceSO { get; private set; }
+        public CellData(CellPosition cellPosition)
         {
-            GridPosition = gridPosition;
+            CellPosition = cellPosition;
         }
+        
+        public void SetSourceSO(CellData_SO sourceSo)
+        {
+            SourceSO = sourceSo;
+        }
+
 
         public void FillCell(Cell grid)
         {
-            Grid = grid;
+            Cell = grid;
         }
         
         public void FillItem(CellItem gridItem)
         {
             CellItem = gridItem;
+        }
+
+        public void EraseItem()
+        {
+            CellItem = null;
         }
     }
 }
