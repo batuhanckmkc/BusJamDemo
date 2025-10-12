@@ -34,55 +34,20 @@ namespace BusJamDemo.Editor
             SerializedProperty busContentsProp = serializedObject.FindProperty(nameof(TargetLevel.BusContents));
             
             
+            // 1. Level Details
             EditorGUILayout.LabelField("--- Level Details ---", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(levelIndexProp);
-            EditorGUILayout.PropertyField(levelTimeProp);
-
-            EditorGUILayout.Space(5);
-
-            EditorGUILayout.LabelField("--- Grid Size ---", EditorStyles.boldLabel);
-            
-            EditorGUI.BeginChangeCheck();
-            
-            // Draw Rows and Columns fields
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.PropertyField(rowsProp);
-            EditorGUILayout.PropertyField(columnsProp);
-            EditorGUILayout.EndHorizontal();
-
-            // Did Rows or Columns change?
-            if (EditorGUI.EndChangeCheck())
+            if (levelTimeProp != null)
             {
-                TargetLevel.Rows = Mathf.Max(1, rowsProp.intValue);
-                TargetLevel.Columns = Mathf.Max(1, columnsProp.intValue);
-                
-                if (TargetLevel.GridContents == null || TargetLevel.GridContents.Count != requiredLength)
-                {
-                    _needsResizeAndSave = true;
-                }
+                 EditorGUILayout.PropertyField(levelTimeProp);
             }
-            
-            serializedObject.ApplyModifiedProperties();
-            
+           
             EditorGUILayout.Space(10);
 
+            // 2. GAME MECHANICS DATA
             EditorGUILayout.LabelField("--- GAME MECHANICS DATA ---", EditorStyles.boldLabel);
             
-            if (boardingCellProp.managedReferenceValue == null)
-            {
-                EditorGUILayout.HelpBox("Boarding Cell Content (Tekil obje) alanı boş. Lütfen bir somut sınıf örneği oluşturun.", MessageType.Warning);
-                if (GUILayout.Button("Initialize Boarding Content"))
-                {
-                    TargetLevel.BoardingCellContent = new BoardingCellContent(); 
-                    EditorUtility.SetDirty(TargetLevel);
-                    serializedObject.Update(); 
-                }
-            }
-            else
-            {
-                EditorGUILayout.PropertyField(boardingCellProp, true); 
-            }
-
+            EditorGUILayout.PropertyField(boardingCellProp, true); 
             EditorGUILayout.PropertyField(busContentsProp, true);
             
             DrawBusContentInitializer();
@@ -93,17 +58,39 @@ namespace BusJamDemo.Editor
             
             EditorGUILayout.Space(10);
             
+            // 3. GRID CONTENTS & SIZE
+            
             if (_needsResizeAndSave)
             {
                 EditorGUILayout.HelpBox("Grid size has changed. Deferring resize and save to next frame.", MessageType.Info);
                 EditorApplication.delayCall += ExecuteDelayedResizeAndSave;
                 _needsResizeAndSave = false; 
             }
-            else if (TargetLevel.GridContents != null && TargetLevel.GridContents.Count == requiredLength)
+            
+            EditorGUILayout.LabelField("--- GRID CONTENTS & SIZE ---", EditorStyles.boldLabel);
+            
+            EditorGUI.BeginChangeCheck();
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PropertyField(rowsProp);
+            EditorGUILayout.PropertyField(columnsProp);
+            EditorGUILayout.EndHorizontal();
+
+            if (EditorGUI.EndChangeCheck())
             {
-                EditorGUILayout.LabelField("--- GRID CONTENTS ---", EditorStyles.boldLabel);
+                TargetLevel.Rows = Mathf.Max(1, rowsProp.intValue);
+                TargetLevel.Columns = Mathf.Max(1, columnsProp.intValue);
+                
+                if (TargetLevel.GridContents == null || TargetLevel.GridContents.Count != requiredLength)
+                {
+                    _needsResizeAndSave = true;
+                }
+            }
+
+            if (TargetLevel.GridContents != null && TargetLevel.GridContents.Count == requiredLength)
+            {
                 DrawGridEditor();
             }
+            
             serializedObject.ApplyModifiedProperties();
         }
 
@@ -147,7 +134,6 @@ namespace BusJamDemo.Editor
         {
             if (target == null) return;
             
-            // Recalculate based on clamped values
             int currentRequiredLength = CurrentRows * CurrentColumns; 
 
             if (TargetLevel.GridContents == null || TargetLevel.GridContents.Count != currentRequiredLength)
@@ -171,12 +157,10 @@ namespace BusJamDemo.Editor
             {
                 if (i < TargetLevel.GridContents.Count && TargetLevel.GridContents[i] != null)
                 {
-                    // Preserve existing content
                     newList.Add(TargetLevel.GridContents[i]);
                 }
                 else
                 {
-                    // Fill new or null slots with Empty Content
                     newList.Add(new EmptyContent { Type = CellContentType.Empty });
                 }
             }
@@ -188,14 +172,11 @@ namespace BusJamDemo.Editor
         /// </summary>
         private void DrawGridEditor()
         {
-            // Use CurrentColumns here to avoid division by zero
             int columns = CurrentColumns;
-            
-            // Check for changes made via button clicks or detail panels
             EditorGUI.BeginChangeCheck();
             
             EditorGUILayout.BeginVertical("Box");
-            for (int i = 0; i < CurrentRows; i++) // Use CurrentRows
+            for (int i = 0; i < CurrentRows; i++)
             {
                 EditorGUILayout.BeginHorizontal();
                 for (int j = 0; j < columns; j++)
@@ -209,13 +190,11 @@ namespace BusJamDemo.Editor
 
             EditorGUILayout.Space(10);
 
-            // Draw details panel if a cell is selected
             if (_selectedCellIndex != -1 && _selectedCellIndex < requiredLength)
             {
                 DrawCellDetails(_selectedCellIndex);
             }
 
-            // If any cell content/selection changed, mark the asset as dirty
             if (EditorGUI.EndChangeCheck())
             {
                 EditorUtility.SetDirty(TargetLevel);
@@ -231,7 +210,6 @@ namespace BusJamDemo.Editor
             GUIStyle buttonStyle = new GUIStyle(GUI.skin.button);
             Color baseColor = GetColorForCellType(currentContent.Type);
             
-            // Highlight the selected cell
             if (index == _selectedCellIndex)
             {
                 buttonStyle.normal.textColor = Color.yellow;
@@ -243,15 +221,13 @@ namespace BusJamDemo.Editor
             
             string buttonText = $"{currentContent.GetTypeName()}\n({index / columns}, {index % columns})";
 
-            // Calculate button width to fit horizontally
             float buttonWidth = (EditorGUIUtility.currentViewWidth / columns) - 18; 
             if (GUILayout.Button(buttonText, buttonStyle, GUILayout.Width(buttonWidth), GUILayout.Height(40)))
             {
-                // Toggle selection
                 _selectedCellIndex = (_selectedCellIndex == index) ? -1 : index;
             }
             
-            GUI.backgroundColor = Color.white; // Reset background color
+            GUI.backgroundColor = Color.white;
         }
 
         /// <summary>
@@ -263,13 +239,11 @@ namespace BusJamDemo.Editor
 
             EditorGUILayout.BeginVertical("HelpBox");
             
-            // Use CurrentColumns in the display string
             EditorGUILayout.LabelField($"--- Cell Details: ({index / CurrentColumns}, {index % CurrentColumns}) ---", EditorStyles.boldLabel);
             
             // Draw Type selection
             CellContentType selectedType = (CellContentType)EditorGUILayout.EnumPopup("Cell Type", currentContent.Type);
             
-            // If type changes, create a new POCO object
             if (selectedType != currentContent.Type)
             {
                 TargetLevel.GridContents[index] = CreateNewContentObject(selectedType);
@@ -283,39 +257,48 @@ namespace BusJamDemo.Editor
             {
                 PassengerContent passenger = (PassengerContent)currentContent;
                 passenger.Color = (ColorType)EditorGUILayout.EnumPopup("Passenger Color", passenger.Color);
-                passenger.PassengerType = (PassengerType)EditorGUILayout.EnumPopup("Passenger Type", passenger.PassengerType);
+                passenger.PassengerType = (PassengerType)EditorGUILayout.EnumPopup("Passenger Type", passenger.PassengerType); 
             }
             else if (currentContent.Type == CellContentType.Tunnel)
             {
                 TunnelContent tunnel = (TunnelContent)currentContent;
-                EditorGUILayout.LabelField("Passenger Sequence:", EditorStyles.miniLabel);
+                EditorGUILayout.LabelField("Passenger Sequence:", EditorStyles.miniBoldLabel);
                 
-                // Sequence management buttons
+                // SEQUENCE MANAGEMENT BUTTONS
                 EditorGUILayout.BeginHorizontal();
-                if (GUILayout.Button("Add Passenger (Red)", EditorStyles.miniButton))
+                if (GUILayout.Button("Add New Passenger", EditorStyles.miniButton))
                 {
-                    tunnel.PassengerSequence.Add(ColorType.Red); 
+                    tunnel.PassengerSequence.Add(new PassengerContent { Color = ColorType.Red, Type = CellContentType.Passenger });
+                    EditorUtility.SetDirty(TargetLevel);
                 }
+                
                 if (GUILayout.Button("Clear Sequence", EditorStyles.miniButton))
                 {
                     if (EditorUtility.DisplayDialog("Confirm", "Are you sure you want to clear the tunnel sequence?", "Clear", "Cancel"))
                     {
                         tunnel.PassengerSequence.Clear();
+                        EditorUtility.SetDirty(TargetLevel);
                     }
                 }
                 EditorGUILayout.EndHorizontal();
-                
-                // List and manage sequence items
                 for(int i = 0; i < tunnel.PassengerSequence.Count; i++)
                 {
+                    PassengerContent sequenceItem = tunnel.PassengerSequence[i];
+                    EditorGUILayout.BeginVertical("Box");
                     EditorGUILayout.BeginHorizontal();
-                    tunnel.PassengerSequence[i] = (ColorType)EditorGUILayout.EnumPopup($"Slot {i}", tunnel.PassengerSequence[i]);
+                    EditorGUILayout.LabelField($"Slot {i} ({sequenceItem.Color} - {sequenceItem.PassengerType})", EditorStyles.boldLabel);
+                    
+                    // Remove button
                     if (GUILayout.Button("X", EditorStyles.miniButton, GUILayout.Width(20)))
                     {
                         tunnel.PassengerSequence.RemoveAt(i);
+                        EditorUtility.SetDirty(TargetLevel);
                         break;
                     }
                     EditorGUILayout.EndHorizontal();
+                    sequenceItem.Color = (ColorType)EditorGUILayout.EnumPopup("Passenger Color", sequenceItem.Color);
+                    sequenceItem.PassengerType = (PassengerType)EditorGUILayout.EnumPopup("Passenger Type", sequenceItem.PassengerType);
+                    EditorGUILayout.EndVertical(); // Box End
                 }
             }
             

@@ -21,32 +21,33 @@ MonoBehaviour:
   BusContents:
   - rid: 6753807628482118441
   - rid: 6753807628482118442
+  - rid: 6753807628482118504
   GridContents:
   - rid: 6753807628482118435
-  - rid: 6753807628482118470
-  - rid: 6753807628482118471
-  - rid: 6753807628482118472
-  - rid: 6753807628482118473
-  - rid: 6753807628482118450
-  - rid: 6753807628482118451
-  - rid: 6753807628482118474
-  - rid: 6753807628482118453
-  - rid: 6753807628482118454
-  - rid: 6753807628482118455
-  - rid: 6753807628482118456
-  - rid: 6753807628482118457
-  - rid: 6753807628482118458
-  - rid: 6753807628482118459
-  - rid: 6753807628482118460
-  - rid: 6753807628482118461
-  - rid: 6753807628482118462
-  - rid: 6753807628482118463
-  - rid: 6753807628482118464
-  - rid: 6753807628482118465
-  - rid: 6753807628482118466
-  - rid: 6753807628482118467
-  - rid: 6753807628482118468
-  - rid: 6753807628482118469
+  - rid: 6753807628482118500
+  - rid: 6753807628482118501
+  - rid: 6753807628482118502
+  - rid: 6753807628482118503
+  - rid: 6753807628482118480
+  - rid: 6753807628482118481
+  - rid: 6753807628482118482
+  - rid: 6753807628482118483
+  - rid: 6753807628482118484
+  - rid: 6753807628482118485
+  - rid: 6753807628482118486
+  - rid: 6753807628482118505
+  - rid: 6753807628482118488
+  - rid: 6753807628482118489
+  - rid: 6753807628482118490
+  - rid: 6753807628482118491
+  - rid: 6753807628482118492
+  - rid: 6753807628482118493
+  - rid: 6753807628482118494
+  - rid: 6753807628482118495
+  - rid: 6753807628482118496
+  - rid: 6753807628482118497
+  - rid: 6753807628482118498
+  - rid: 6753807628482118499
   references:
     version: 2
     RefIds:
@@ -84,112 +85,132 @@ MonoBehaviour:
         - Type: 5
           PassengerType: 0
           Color: 1
-    - rid: 6753807628482118450
-      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
-      data:
-        Type: -1
-    - rid: 6753807628482118451
-      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
-      data:
-        Type: -1
-    - rid: 6753807628482118453
-      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
-      data:
-        Type: -1
-    - rid: 6753807628482118454
-      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
-      data:
-        Type: -1
-    - rid: 6753807628482118455
-      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
-      data:
-        Type: -1
-    - rid: 6753807628482118456
-      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
-      data:
-        Type: -1
-    - rid: 6753807628482118457
-      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
-      data:
-        Type: -1
-    - rid: 6753807628482118458
-      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
-      data:
-        Type: -1
-    - rid: 6753807628482118459
-      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
-      data:
-        Type: -1
-    - rid: 6753807628482118460
-      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
-      data:
-        Type: -1
-    - rid: 6753807628482118461
-      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
-      data:
-        Type: -1
-    - rid: 6753807628482118462
-      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
-      data:
-        Type: -1
-    - rid: 6753807628482118463
-      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
-      data:
-        Type: -1
-    - rid: 6753807628482118464
-      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
-      data:
-        Type: -1
-    - rid: 6753807628482118465
-      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
-      data:
-        Type: -1
-    - rid: 6753807628482118466
-      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
-      data:
-        Type: -1
-    - rid: 6753807628482118467
-      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
-      data:
-        Type: -1
-    - rid: 6753807628482118468
-      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
-      data:
-        Type: -1
-    - rid: 6753807628482118469
-      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
-      data:
-        Type: -1
-    - rid: 6753807628482118470
-      type: {class: PassengerContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
-      data:
-        Type: 5
-        PassengerType: 0
-        Color: 0
-    - rid: 6753807628482118471
-      type: {class: PassengerContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
-      data:
-        Type: 5
-        PassengerType: 0
-        Color: 0
-    - rid: 6753807628482118472
-      type: {class: PassengerContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
-      data:
-        Type: 5
-        PassengerType: 0
-        Color: 0
-    - rid: 6753807628482118473
-      type: {class: PassengerContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
-      data:
-        Type: 5
-        PassengerType: 0
-        Color: 0
-    - rid: 6753807628482118474
-      type: {class: TunnelContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
-      data:
-        Type: 10
-        PassengerSequence: 
     - rid: 6753807628482118475
       type: {class: BoardingCellContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
       data:
         DefaultBoardingCellCount: 5
+    - rid: 6753807628482118480
+      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
+      data:
+        Type: -1
+    - rid: 6753807628482118481
+      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
+      data:
+        Type: -1
+    - rid: 6753807628482118482
+      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
+      data:
+        Type: -1
+    - rid: 6753807628482118483
+      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
+      data:
+        Type: -1
+    - rid: 6753807628482118484
+      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
+      data:
+        Type: -1
+    - rid: 6753807628482118485
+      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
+      data:
+        Type: -1
+    - rid: 6753807628482118486
+      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
+      data:
+        Type: -1
+    - rid: 6753807628482118488
+      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
+      data:
+        Type: -1
+    - rid: 6753807628482118489
+      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
+      data:
+        Type: -1
+    - rid: 6753807628482118490
+      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
+      data:
+        Type: -1
+    - rid: 6753807628482118491
+      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
+      data:
+        Type: -1
+    - rid: 6753807628482118492
+      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
+      data:
+        Type: -1
+    - rid: 6753807628482118493
+      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
+      data:
+        Type: -1
+    - rid: 6753807628482118494
+      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
+      data:
+        Type: -1
+    - rid: 6753807628482118495
+      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
+      data:
+        Type: -1
+    - rid: 6753807628482118496
+      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
+      data:
+        Type: -1
+    - rid: 6753807628482118497
+      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
+      data:
+        Type: -1
+    - rid: 6753807628482118498
+      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
+      data:
+        Type: -1
+    - rid: 6753807628482118499
+      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
+      data:
+        Type: -1
+    - rid: 6753807628482118500
+      type: {class: PassengerContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
+      data:
+        Type: 5
+        PassengerType: 0
+        Color: 0
+    - rid: 6753807628482118501
+      type: {class: PassengerContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
+      data:
+        Type: 5
+        PassengerType: 0
+        Color: 0
+    - rid: 6753807628482118502
+      type: {class: PassengerContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
+      data:
+        Type: 5
+        PassengerType: 0
+        Color: 0
+    - rid: 6753807628482118503
+      type: {class: PassengerContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
+      data:
+        Type: 5
+        PassengerType: 0
+        Color: 0
+    - rid: 6753807628482118504
+      type: {class: BusDefinitionData, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
+      data:
+        Color: 2
+        RequiredPassengerSequence:
+        - Type: 5
+          PassengerType: 0
+          Color: 2
+        - Type: 5
+          PassengerType: 0
+          Color: 2
+        - Type: 5
+          PassengerType: 0
+          Color: 2
+    - rid: 6753807628482118505
+      type: {class: TunnelContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
+      data:
+        Type: 10
+        PassengerSequence:
+        - Type: 5
+          PassengerType: 0
+          Color: 0
+        - Type: 5
+          PassengerType: 0
+          Color: 1

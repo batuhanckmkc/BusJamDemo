@@ -65,7 +65,7 @@ namespace BusJamDemo.LevelLoad
         public class TunnelContent : CellContent
         {
             [Tooltip("The color order of the passengers that will exit from the tunnel.")]
-            public List<ColorType> PassengerSequence = new List<ColorType>();
+            public List<PassengerContent> PassengerSequence = new List<PassengerContent>();
             public override string GetTypeName() => "Tunnel";
         }
     
