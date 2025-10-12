@@ -33,6 +33,11 @@ namespace BusJamDemo.Grid
             EventManager.Unsubscribe(GameplayEvents.OnBusArrivedToStop, CheckPassengerAvailability);
         }
 
+        private void UpdateCellData(CellData cellData)
+        {
+            CellData = cellData;
+        }
+        
         public void HandleClick()
         {
             Perform();
@@ -43,6 +48,7 @@ namespace BusJamDemo.Grid
             var path = Pathfinder.Instance.GetClosestPathToExit(CellData.CellPosition);
             if (path != null && path.Count > 0)
             {
+                EventManager<ItemRemoveData>.Execute(GameplayEvents.OnCellItemRemoved, new ItemRemoveData(CellData));
                 CanClick = false;
                 MoveAlongPath(path); 
             }
@@ -87,12 +93,13 @@ namespace BusJamDemo.Grid
         private void MoveBus()
         {
             BusController.Instance.CurrentBus.GetOn(this);
-            EventManager<ItemRemoveData>.Execute(GameplayEvents.OnCellItemRemoved, new ItemRemoveData(CellData.CellPosition));
+            EventManager<ItemRemoveData>.Execute(GameplayEvents.OnCellItemRemoved, new ItemRemoveData(CellData));
             transform.DOMove(BusController.Instance.CurrentBus.transform.position, 2f).OnComplete(() =>
             {
                 transform.SetParent(BusController.Instance.CurrentBus.transform);
                 BusController.Instance.CurrentBus.CheckBusState();
                 SetState(PassengerState.BusState);
+                UpdateCellData(null);
             });   
         }
         
@@ -100,6 +107,7 @@ namespace BusJamDemo.Grid
         {
             var targetBoardingCell = GridManager.Instance.GetEligibleBoardingCell();
             targetBoardingCell.FillItem(this);
+            UpdateCellData(targetBoardingCell);
             transform.DOMove(targetBoardingCell.CellPosition.WorldPosition, 1f);
             SetState(PassengerState.BoardingState);
         }

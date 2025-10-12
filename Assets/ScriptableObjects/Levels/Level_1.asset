@@ -32,10 +32,10 @@ MonoBehaviour:
   - rid: 6753807634836226435
   - rid: 6753807634836226437
   - rid: 6753807634836226438
-  - rid: 6753807634836226430
+  - rid: 6753807634836226443
   - rid: 6753807634406572292
   - rid: 6753807634836226436
-  - rid: 6753807634406572294
+  - rid: 6753807634836226441
   - rid: 6753807634406572295
   - rid: 6753807634406572296
   - rid: 6753807634406572297
@@ -67,10 +67,6 @@ MonoBehaviour:
       data:
         Type: -1
     - rid: 6753807634406572292
-      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
-      data:
-        Type: -1
-    - rid: 6753807634406572294
       type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
       data:
         Type: -1
@@ -154,17 +150,6 @@ MonoBehaviour:
         - Type: 5
           PassengerType: 0
           ColorType: 2
-    - rid: 6753807634836226430
-      type: {class: TunnelContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
-      data:
-        Type: 10
-        PassengerSequence:
-        - Type: 5
-          PassengerType: 0
-          ColorType: 0
-        - Type: 5
-          PassengerType: 0
-          ColorType: 1
     - rid: 6753807634836226432
       type: {class: PassengerContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
       data:
@@ -207,3 +192,13 @@ MonoBehaviour:
         Type: 5
         PassengerType: 0
         ColorType: 2
+    - rid: 6753807634836226441
+      type: {class: PassengerContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
+      data:
+        Type: 5
+        PassengerType: 0
+        ColorType: 3
+    - rid: 6753807634836226443
+      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
+      data:
+        Type: -1

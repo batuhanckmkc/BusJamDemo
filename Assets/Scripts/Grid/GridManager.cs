@@ -13,6 +13,7 @@ namespace BusJamDemo.Grid
         private readonly List<CellData> _boardingCells = new();
         public List<CellData> BoardingCells => _boardingCells;
         public CellData this[int row, int column] => _mainCells[row, column];
+        private readonly Dictionary<int, CellData> _allCellsById = new(); 
         //Z
         public int RowCount;
         //X
@@ -53,6 +54,7 @@ namespace BusJamDemo.Grid
                 
                 var boardingCell = Instantiate(cellPrefab, worldPosition, Quaternion.identity, transform);
                 cellData.FillCell(boardingCell);
+                _allCellsById.Add(cellData.CellID, cellData); 
                 _boardingCells.Add(cellData);
             }
         }
@@ -78,7 +80,7 @@ namespace BusJamDemo.Grid
                     
                     var cell = Instantiate(cellPrefab, worldPosition, Quaternion.identity, transform);
                     cellData.FillCell(cell);
-                    
+                    _allCellsById.Add(cellData.CellID, cellData); 
                     _mainCells[i, j] = cellData;
                 }
             }
@@ -97,7 +99,7 @@ namespace BusJamDemo.Grid
 
         private void OnCellItemRemoved(ItemRemoveData removeData)
         {
-            var itemRemovedCell = _mainCells[removeData.Coordinates.Row, removeData.Coordinates.Column];
+            var itemRemovedCell = _allCellsById[removeData.TargetCellData.CellID];
             itemRemovedCell.EraseItem();
         }
     }
@@ -116,11 +118,10 @@ namespace BusJamDemo.Grid
         
     public struct ItemRemoveData
     {
-        public readonly CellPosition Coordinates;
-            
-        public ItemRemoveData(CellPosition coordinates)
+        public readonly CellData TargetCellData; 
+        public ItemRemoveData(CellData targetCellData)
         {
-            Coordinates = coordinates;
+            TargetCellData = targetCellData;
         }
     }
 }

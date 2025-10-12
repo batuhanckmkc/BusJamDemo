@@ -4,12 +4,15 @@ namespace BusJamDemo.Grid
 {
     public class CellData
     {
-        public bool HasItem => CellItem != null;
+        public readonly int CellID; 
+        public bool HasItem => HeldItem != null;
         public Cell Cell { get; private set; }
-        public CellItem CellItem { get; private set; }
+        public CellItem HeldItem { get; private set; }
         public CellPosition CellPosition { get; private set; }
+        private static int _nextCellId = 0;
         public CellData(CellPosition cellPosition)
         {
+            CellID = _nextCellId++;
             CellPosition = cellPosition;
         }
         
@@ -20,12 +23,12 @@ namespace BusJamDemo.Grid
         
         public void FillItem(CellItem gridItem)
         {
-            CellItem = gridItem;
+            HeldItem = gridItem;
         }
 
         public void EraseItem()
         {
-            CellItem = null;
+            HeldItem = null;
         }
     }
 }

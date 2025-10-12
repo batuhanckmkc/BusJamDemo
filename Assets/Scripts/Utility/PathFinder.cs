@@ -86,8 +86,6 @@ namespace BusJamDemo.Utility
                 current = parents[current];
             }
 
-            var cellPosition = grid[start.x, start.y].CellPosition;
-            EventManager<ItemRemoveData>.Execute(GameplayEvents.OnCellItemRemoved, new ItemRemoveData(cellPosition));
             path.Reverse();
             return path;
         }
@@ -96,7 +94,7 @@ namespace BusJamDemo.Utility
         private bool IsBlocked(int row, int col)
         {
             var cellData = grid[row, col]; 
-            if (cellData.HasItem && cellData.CellItem is IBlocker)
+            if (cellData.HasItem && cellData.HeldItem is IBlocker)
             {
                 return true;
             }
@@ -106,7 +104,7 @@ namespace BusJamDemo.Utility
         private bool IsMovePossible(int row, int col)
         {
             var cellData = grid[row, col];
-            return cellData.HasItem && cellData.CellItem is Passenger;
+            return cellData.HasItem && cellData.HeldItem is Passenger;
         }
     }
 }
