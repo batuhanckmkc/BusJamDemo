@@ -211,29 +211,39 @@ namespace BusJamDemo.Editor
         /// <summary>
         /// Draws a single cell as a clickable button showing its type and coordinates.
         /// </summary>
+        /// <summary>
         private void DrawCellButton(int index, int columns)
         {
             CellContent currentContent = TargetLevel.GridContents[index];
             GUIStyle buttonStyle = new GUIStyle(GUI.skin.button);
             Color baseColor = GetColorForCellType(currentContent);
-            
+
             if (index == _selectedCellIndex)
             {
                 buttonStyle.normal.textColor = Color.yellow;
                 buttonStyle.fontStyle = FontStyle.Bold;
-                baseColor *= 1.2f; 
+                baseColor *= 1.2f;
             }
-            
-            GUI.backgroundColor = baseColor;
-            
-            string buttonText = $"{currentContent.GetTypeName()}\n({index / columns}, {index % columns})";
 
-            float buttonWidth = (EditorGUIUtility.currentViewWidth / columns) - 18; 
-            if (GUILayout.Button(buttonText, buttonStyle, GUILayout.Width(buttonWidth), GUILayout.Height(40)))
+            GUI.backgroundColor = baseColor;
+
+            string buttonText = $"{currentContent.GetTypeName()}\n({index / columns}, {index % columns})";
+            float inspectorWidth = EditorGUIUtility.currentViewWidth;
+
+            float totalPadding = 30f;
+            float availableWidth = inspectorWidth - totalPadding;
+
+            float calculatedWidth = availableWidth / columns;
+
+            float buttonHeight = calculatedWidth;
+
+            buttonHeight = Mathf.Max(20f, buttonHeight);
+            buttonHeight = Mathf.Min(60f, buttonHeight);
+            if (GUILayout.Button(buttonText, buttonStyle, GUILayout.Height(buttonHeight), GUILayout.ExpandWidth(true)))
             {
                 _selectedCellIndex = (_selectedCellIndex == index) ? -1 : index;
             }
-            
+
             GUI.backgroundColor = Color.white;
         }
 
