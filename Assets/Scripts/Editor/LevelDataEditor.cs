@@ -28,6 +28,9 @@ namespace BusJamDemo.Editor
             // Find all required properties
             SerializedProperty levelIndexProp = serializedObject.FindProperty("LevelIndex");
             SerializedProperty levelTimeProp = serializedObject.FindProperty("Time");
+            SerializedProperty busSpawnDistance = serializedObject.FindProperty("BusSpawnDistance");
+            SerializedProperty busSpacingX = serializedObject.FindProperty("BusSpacingX");
+
             SerializedProperty rowsProp = serializedObject.FindProperty("Rows");
             SerializedProperty columnsProp = serializedObject.FindProperty("Columns");
             SerializedProperty boardingCellProp = serializedObject.FindProperty(nameof(TargetLevel.BoardingCellContent));
@@ -37,6 +40,9 @@ namespace BusJamDemo.Editor
             // 1. Level Details
             EditorGUILayout.LabelField("--- Level Details ---", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(levelIndexProp);
+            EditorGUILayout.PropertyField(busSpawnDistance);
+            EditorGUILayout.PropertyField(busSpacingX);
+
             if (levelTimeProp != null)
             {
                  EditorGUILayout.PropertyField(levelTimeProp);
@@ -106,7 +112,7 @@ namespace BusJamDemo.Editor
             
             if (GUILayout.Button("Add New Bus Definition", EditorStyles.miniButton))
             {
-                TargetLevel.BusContents.Add(new BusDefinitionData()); 
+                TargetLevel.BusContents.Add(new BusContent()); 
                 
                 EditorUtility.SetDirty(TargetLevel);
                 serializedObject.ApplyModifiedProperties();
@@ -256,7 +262,7 @@ namespace BusJamDemo.Editor
             if (currentContent.Type == CellContentType.Passenger)
             {
                 PassengerContent passenger = (PassengerContent)currentContent;
-                passenger.Color = (ColorType)EditorGUILayout.EnumPopup("Passenger Color", passenger.Color);
+                passenger.ColorType = (ColorType)EditorGUILayout.EnumPopup("Passenger Color", passenger.ColorType);
                 passenger.PassengerType = (PassengerType)EditorGUILayout.EnumPopup("Passenger Type", passenger.PassengerType); 
             }
             else if (currentContent.Type == CellContentType.Tunnel)
@@ -268,7 +274,7 @@ namespace BusJamDemo.Editor
                 EditorGUILayout.BeginHorizontal();
                 if (GUILayout.Button("Add New Passenger", EditorStyles.miniButton))
                 {
-                    tunnel.PassengerSequence.Add(new PassengerContent { Color = ColorType.Red, Type = CellContentType.Passenger });
+                    tunnel.PassengerSequence.Add(new PassengerContent { ColorType = ColorType.Red, Type = CellContentType.Passenger });
                     EditorUtility.SetDirty(TargetLevel);
                 }
                 
@@ -286,7 +292,7 @@ namespace BusJamDemo.Editor
                     PassengerContent sequenceItem = tunnel.PassengerSequence[i];
                     EditorGUILayout.BeginVertical("Box");
                     EditorGUILayout.BeginHorizontal();
-                    EditorGUILayout.LabelField($"Slot {i} ({sequenceItem.Color} - {sequenceItem.PassengerType})", EditorStyles.boldLabel);
+                    EditorGUILayout.LabelField($"Slot {i} ({sequenceItem.ColorType} - {sequenceItem.PassengerType})", EditorStyles.boldLabel);
                     
                     // Remove button
                     if (GUILayout.Button("X", EditorStyles.miniButton, GUILayout.Width(20)))
@@ -296,7 +302,7 @@ namespace BusJamDemo.Editor
                         break;
                     }
                     EditorGUILayout.EndHorizontal();
-                    sequenceItem.Color = (ColorType)EditorGUILayout.EnumPopup("Passenger Color", sequenceItem.Color);
+                    sequenceItem.ColorType = (ColorType)EditorGUILayout.EnumPopup("Passenger Color", sequenceItem.ColorType);
                     sequenceItem.PassengerType = (PassengerType)EditorGUILayout.EnumPopup("Passenger Type", sequenceItem.PassengerType);
                     EditorGUILayout.EndVertical(); // Box End
                 }

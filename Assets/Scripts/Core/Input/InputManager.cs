@@ -22,7 +22,7 @@ namespace BusJamDemo.Core.Input
             if (Physics.Raycast(ray, out hit, _raycastMaxDistance, targetLayer))
             {
                 IClickable clickable = hit.collider.GetComponent<IClickable>();
-                if (clickable != null)
+                if (clickable != null && clickable.CanClick)
                 {
                     clickable.HandleClick();
                 }

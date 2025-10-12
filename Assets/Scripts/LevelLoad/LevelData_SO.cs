@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace BusJamDemo.LevelLoad
 {
@@ -12,6 +13,9 @@ namespace BusJamDemo.LevelLoad
         public int Time;
         public int Rows = 8;
         public int Columns = 8;
+        public Vector3 BusSpawnDistance;
+        public float BusSpacingX = 5f;
+            
         [SerializeReference]
         public BoardingCellContent BoardingCellContent;
         [SerializeReference]
@@ -28,15 +32,10 @@ namespace BusJamDemo.LevelLoad
         public enum PassengerType { Standard = 0, Vip = 5 }
     
         [Serializable]
-        public class BusDefinitionData : BusContent
+        public class BusContent
         {
+            public ColorType ColorType;
             public List<PassengerContent> RequiredPassengerSequence = new List<PassengerContent>();
-        }
-        
-        [Serializable]
-        public abstract class BusContent
-        {
-            public ColorType Color;
         }
         
         [Serializable]
@@ -57,7 +56,7 @@ namespace BusJamDemo.LevelLoad
         public class PassengerContent : CellContent
         {
             public PassengerType PassengerType = PassengerType.Standard;
-            public ColorType Color = ColorType.Red;
+            public ColorType ColorType = ColorType.Red;
             public override string GetTypeName() => "Passenger";
         }
 

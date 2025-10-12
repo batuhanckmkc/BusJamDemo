@@ -336,6 +336,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3db3d5905e348988fe2f8ae3d3c4afc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  skinnedMeshRenderer: {fileID: 451760539226203357}
+  PassengerContent:
+    Type: 0
+    PassengerType: 0
+    ColorType: 0
 --- !u!136 &1236519813193484450
 CapsuleCollider:
   m_ObjectHideFlags: 0

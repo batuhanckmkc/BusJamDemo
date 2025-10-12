@@ -87,7 +87,7 @@ namespace BusJamDemo.Utility
             }
 
             var cellPosition = grid[start.x, start.y].CellPosition;
-            EventManager<ItemRemoveData>.Execute(BoardEvents.OnCellItemRemoved, new ItemRemoveData(cellPosition));
+            EventManager<ItemRemoveData>.Execute(GameplayEvents.OnCellItemRemoved, new ItemRemoveData(cellPosition));
             path.Reverse();
             return path;
         }

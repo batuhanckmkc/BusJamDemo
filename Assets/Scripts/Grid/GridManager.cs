@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using BusJamDemo.Utility;
 using UnityEngine;
 
@@ -7,39 +9,51 @@ namespace BusJamDemo.Grid
     {
         [SerializeField] private Cell cellPrefab;
         private CellData[,] _mainCells;
-        private CellData[] _boardingCells;
-
+        public CellData[,] MainCells => _mainCells;
+        private readonly List<CellData> _boardingCells = new();
+        public List<CellData> BoardingCells => _boardingCells;
         public CellData this[int row, int column] => _mainCells[row, column];
-        
-        public int BoardingCellCount;
-
         //Z
         public int RowCount;
         //X
         public int ColumnCount;
         public float CellSize;
-
+        public static GridManager Instance;
         private void Awake()
         {
-            EventManager<ItemPlaceData>.Subscribe(BoardEvents.OnCellItemPlaced, OnCellItemPlaced);
-            EventManager<ItemRemoveData>.Subscribe(BoardEvents.OnCellItemRemoved, OnCellItemRemoved);
+            if (Instance == null)
+            {
+                Instance = this;
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
+            EventManager<ItemPlaceData>.Subscribe(GameplayEvents.OnCellItemPlaced, OnCellItemPlaced);
+            EventManager<ItemRemoveData>.Subscribe(GameplayEvents.OnCellItemRemoved, OnCellItemRemoved);
         }
 
         private void OnDestroy()
         {
-            EventManager<ItemPlaceData>.Unsubscribe(BoardEvents.OnCellItemPlaced, OnCellItemPlaced);
-            EventManager<ItemRemoveData>.Unsubscribe(BoardEvents.OnCellItemRemoved, OnCellItemRemoved);
+            EventManager<ItemPlaceData>.Unsubscribe(GameplayEvents.OnCellItemPlaced, OnCellItemPlaced);
+            EventManager<ItemRemoveData>.Unsubscribe(GameplayEvents.OnCellItemRemoved, OnCellItemRemoved);
         }
 
-        public void GenerateBoardingCells()
+        public void GenerateBoardingCells(int boardingCellCount)
         {
-            var gridWidth = CellSize * (BoardingCellCount - 1);
-            var centerOffset = new Vector3(gridWidth / 2, 0, 0);
-            var lastRowZPosition = _mainCells[RowCount - 1, 0].CellPosition.WorldPosition.z * 2;
-            for (int i = 0; i < BoardingCellCount; i++)
+            var boardingCellsDistanceMultiplier = 3;
+            var cellsWidth = CellSize * (boardingCellCount - 1);
+            var topCellZ = _mainCells[RowCount - 1, 0].CellPosition.WorldPosition.z;
+            var centerOffset = new Vector3(cellsWidth / 2, 0, 0);
+            for (int i = 0; i < boardingCellCount; i++)
             {
-                var worldPosition = new Vector3(i * CellSize, 0, lastRowZPosition) - centerOffset;
-                Instantiate(cellPrefab, worldPosition, Quaternion.identity, transform);
+                var worldPosition = new Vector3(i * CellSize, 0, topCellZ + CellSize * boardingCellsDistanceMultiplier) - centerOffset;
+                var cellPosition = new CellPosition(worldPosition);
+                var cellData = new CellData(cellPosition);
+                
+                var boardingCell = Instantiate(cellPrefab, worldPosition, Quaternion.identity, transform);
+                cellData.FillCell(boardingCell);
+                _boardingCells.Add(cellData);
             }
         }
         
@@ -70,6 +84,17 @@ namespace BusJamDemo.Grid
             }
         }
 
+        public CellData GetEligibleBoardingCell()
+        {
+            return _boardingCells.FirstOrDefault(cellData => !cellData.HasItem);
+        }
+
+        public Vector3 GetBoardingCellsMiddlePosition()
+        {
+            var cellsWidth = CellSize * _boardingCells.Count - 1;
+            return new Vector3(cellsWidth / 2, 0, 0);
+        }
+        
         private void OnCellItemPlaced(ItemPlaceData placeData)
         {
             var itemPlacedCell = _mainCells[placeData.Coordinates.Row, placeData.Coordinates.Column];

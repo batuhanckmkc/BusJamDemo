@@ -1,8 +1,9 @@
 namespace BusJamDemo.Utility
 {
-    public enum BoardEvents
+    public enum GameplayEvents
     {
         OnCellItemPlaced,
-        OnCellItemRemoved
+        OnCellItemRemoved,
+        OnBusArrivedToStop
     }
 }

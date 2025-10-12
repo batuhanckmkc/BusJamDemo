@@ -92,6 +92,52 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   grid: {fileID: 273104418305386992}
+--- !u!1 &3738538318284829698
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2635006755651439585}
+  - component: {fileID: 5737646281809508022}
+  m_Layer: 0
+  m_Name: BusController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2635006755651439585
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3738538318284829698}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5150010823740406598}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5737646281809508022
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3738538318284829698}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a44fbda7f0a4175bd1f2917fe46190c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  busPrefab: {fileID: 837636465906850450, guid: e58732c8f40f945ecb1624e2f39351bf, type: 3}
+  offSet: 5
 --- !u!1 &4146778230580253422
 GameObject:
   m_ObjectHideFlags: 0
@@ -137,7 +183,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cellPrefab: {fileID: 3689744341711943364, guid: 261421a3c439749c78e28da2306d06c6, type: 3}
-  BoardingCellCount: 5
   RowCount: 5
   ColumnCount: 5
   CellSize: 1.1
@@ -187,6 +232,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridManager: {fileID: 273104418305386992}
   itemSpawner: {fileID: 5625672799170011667}
+  busController: {fileID: 5737646281809508022}
   defaultCellSize: 1.1
   currentLevelData: {fileID: 11400000, guid: 95b61b8b0a21d4efa981613023d48c16, type: 2}
 --- !u!1 &6706360138294754160
@@ -223,6 +269,7 @@ Transform:
   - {fileID: 5262891035341783292}
   - {fileID: 8182495774031436812}
   - {fileID: 966435227286834146}
+  - {fileID: 2635006755651439585}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7167946861976900241

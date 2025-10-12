@@ -8,7 +8,7 @@ namespace BusJamDemo.Grid
     {
         [SerializeField] private GridManager gridGenerator;
         [SerializeField] private CellItem[] itemPrefabs; 
-        private CellItem InstantiateAndSetupItem(CellItem prefab, int row, int col, Transform parent)
+        private CellItem InstantiateAndSetupItem(CellItem prefab, CellContent cellContent, int row, int col, Transform parent)
         {
             if (row < 0 || row >= gridGenerator.RowCount || col < 0 || col >= gridGenerator.ColumnCount)
             {
@@ -28,14 +28,14 @@ namespace BusJamDemo.Grid
             
             cellItem.transform.SetParent(parent, true); 
             cellData.FillItem(cellItem);
-            cellItem.Initialize(cellData);
+            cellItem.Initialize(cellData, cellContent);
             return cellItem;
         }
         
         public Passenger SpawnPassenger(PassengerContent content, int row, int col, Transform parent)
         {
             var passengerPrefab = GetPrefabByContent(content.Type);
-            var passenger = InstantiateAndSetupItem(passengerPrefab, row, col, parent) as Passenger;
+            var passenger = InstantiateAndSetupItem(passengerPrefab, content, row, col, parent) as Passenger;
             
             if (passenger != null)
             {
@@ -47,7 +47,7 @@ namespace BusJamDemo.Grid
         public Tunnel SpawnTunnel(TunnelContent content, int row, int col, Transform parent)
         {
             var tunnelPrefab = GetPrefabByContent(content.Type);
-            var tunnel = InstantiateAndSetupItem(tunnelPrefab, row, col, parent) as Tunnel;
+            var tunnel = InstantiateAndSetupItem(tunnelPrefab, content, row, col, parent) as Tunnel;
             
             if (tunnel != null)
             {

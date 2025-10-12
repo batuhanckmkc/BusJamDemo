@@ -1,3 +1,5 @@
+using System;
+using BusJamDemo.Bus;
 using UnityEngine;
 using BusJamDemo.Grid;
 
@@ -8,10 +10,26 @@ namespace BusJamDemo.LevelLoad
         [Header("Required References")]
         [SerializeField] private GridManager gridManager;
         [SerializeField] private CellItemSpawner itemSpawner;
+        [SerializeField] private BusController busController;
+
         [SerializeField] private float defaultCellSize = 1f;
         
         [Header("Load Level")]
         [SerializeField] private LevelData_SO currentLevelData;
+        public LevelData_SO CurrentLevelData => currentLevelData;
+
+        public static LevelLoader Instance;
+        private void Awake()
+        {
+            if (Instance == null)
+            {
+                Instance = this;
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
+        }
 
         private void Start()
         {
@@ -34,8 +52,9 @@ namespace BusJamDemo.LevelLoad
             }
 
             gridManager.GenerateMainCells(levelData.Rows, levelData.Columns, defaultCellSize);
-            gridManager.GenerateBoardingCells();
-            
+            gridManager.GenerateBoardingCells(levelData.BoardingCellContent.DefaultBoardingCellCount);
+            busController.CreateBuses();
+
             int requiredLength = levelData.Rows * levelData.Columns;
 
             for (int i = 0; i < levelData.Rows; i++)
