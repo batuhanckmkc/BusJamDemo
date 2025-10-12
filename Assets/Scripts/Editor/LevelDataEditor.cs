@@ -2,7 +2,8 @@ using BusJamDemo.LevelLoad;
 using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
-using System.Linq; 
+using System.Linq;
+using BusJamDemo.Utility;
 
 namespace BusJamDemo.Editor
 {
@@ -214,7 +215,7 @@ namespace BusJamDemo.Editor
         {
             CellContent currentContent = TargetLevel.GridContents[index];
             GUIStyle buttonStyle = new GUIStyle(GUI.skin.button);
-            Color baseColor = GetColorForCellType(currentContent.Type);
+            Color baseColor = GetColorForCellType(currentContent);
             
             if (index == _selectedCellIndex)
             {
@@ -314,11 +315,13 @@ namespace BusJamDemo.Editor
         /// <summary>
         /// Provides a visual color hint for the cell button based on its content type.
         /// </summary>
-        private Color GetColorForCellType(CellContentType type)
+        private Color GetColorForCellType(CellContent cellContent)
         {
-            switch (type)
+            switch (cellContent.Type)
             {
-                case CellContentType.Passenger: return new Color(1f, 0.6f, 0.6f);
+                case CellContentType.Passenger:
+                    var color = cellContent as PassengerContent;
+                    return color.ColorType.GetColor();
                 case CellContentType.Tunnel: return new Color(0.6f, 0.6f, 1f);
                 case CellContentType.Empty: default: return Color.grey * 0.8f; 
             }
