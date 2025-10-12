@@ -27,13 +27,14 @@ namespace BusJamDemo.LevelLoad
 
         private void LoadLevel(LevelData_SO levelData)
         {
-            if (levelData.GridCells == null)
+            if (levelData.GridContents == null || levelData.GridContents.Count == 0)
             {
-                Debug.LogError("[LevelLoader] LevelData's GridCells array is empty or null.");
+                Debug.LogError("[LevelLoader] LevelData's GridContents list is empty or null.");
                 return;
             }
 
-            gridManager.GenerateGrid(levelData.Rows, levelData.Columns, defaultCellSize);
+            gridManager.GenerateMainCells(levelData.Rows, levelData.Columns, defaultCellSize);
+            gridManager.GenerateBoardingCells();
             
             int requiredLength = levelData.Rows * levelData.Columns;
 
@@ -43,28 +44,42 @@ namespace BusJamDemo.LevelLoad
                 {
                     int index = i * levelData.Columns + j;
                     
-                    if (index >= requiredLength) 
+                    if (index >= requiredLength || index >= levelData.GridContents.Count) 
                     {
-                        Debug.LogError("[LevelLoader] Array overflow! Level data is corrupted.");
+                        Debug.LogError("[LevelLoader] Level data is corrupted: Index overflow.");
                         break;
                     }
 
-                    CellData_SO cellData = levelData.GridCells[index];
-                    if (cellData != null)
-                    {
-                        cellData.LoadCell(null, i, j);
-                        if (!(cellData is EmptyCell_SO))
-                        {
-                            CellItem spawnedItem = itemSpawner.SpawnItem(cellData, i, j, gridManager.transform);
-                            if (spawnedItem != null)
-                            {
-                                Debug.Log($"[LevelLoader] Item spawned: {cellData.CellTypeName} at ({i}, {j})");
-                            }
-                        }
-                    }
+                    CellContent cellContent = levelData.GridContents[index];
+                    SpawnCellItem(cellContent, i, j);
                 }
             }
             Debug.Log($"Level '{levelData.name}' loaded successfully.");
+        }
+        
+        private void SpawnCellItem(CellContent content, int row, int col)
+        {
+            CellItem spawnedItem = null;
+            
+            switch (content.Type)
+            {
+                case CellContentType.Passenger:
+                    var pContent = (PassengerContent)content;
+                    spawnedItem = itemSpawner.SpawnPassenger(pContent, row, col, gridManager.transform);
+                    break;
+                case CellContentType.Tunnel:
+                    var tContent = (TunnelContent)content;
+                    spawnedItem = itemSpawner.SpawnTunnel(tContent, row, col, gridManager.transform);
+                    break;
+                case CellContentType.Empty:
+                default:
+                    break;
+            }
+    
+            if (spawnedItem != null)
+            {
+                Debug.Log($"[LevelLoader] Item spawned: {content.Type} at ({row}, {col})");
+            }
         }
     }
 }

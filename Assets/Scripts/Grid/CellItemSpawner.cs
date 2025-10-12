@@ -1,61 +1,71 @@
-using UnityEngine;
 using System.Linq;
+using UnityEngine;
 using BusJamDemo.LevelLoad;
 
 namespace BusJamDemo.Grid
 {
     public class CellItemSpawner : MonoBehaviour
     {
-        [SerializeField] private GridManager gridManager;
+        [SerializeField] private GridManager gridGenerator;
         [SerializeField] private CellItem[] itemPrefabs; 
-
-        public CellItem SpawnItem(CellData_SO data, int row, int column, Transform parent)
+        private CellItem InstantiateAndSetupItem(CellItem prefab, int row, int col, Transform parent)
         {
-            if (row < 0 || row >= gridManager.RowCount || column < 0 || column >= gridManager.ColumnCount)
+            if (row < 0 || row >= gridGenerator.RowCount || col < 0 || col >= gridGenerator.ColumnCount)
             {
-                Debug.LogWarning($"[Spawner] Invalid coordinates: ({row}, {column})");
+                Debug.LogWarning($"[Spawner] Invalid coordinates: ({row}, {col})");
                 return null;
             }
 
-            var cellData = gridManager[row, column];
+            var cellData = gridGenerator[row, col];
             if (cellData.HasItem)
             {
-                Debug.LogWarning($"[Spawner] Grid cell already occupied: ({row}, {column})");
+                Debug.LogWarning($"[Spawner] Grid cell already occupied: ({row}, {col})");
                 return null;
             }
             
-            CellItem prefabToSpawn = GetPrefabForType(data);
-
-            if (prefabToSpawn == null)
-            {
-                Debug.LogError($"[Spawner] Prefab not found for {data.CellTypeName}.");
-                return null;
-            }
-
             var worldPos = cellData.CellPosition.WorldPosition;
-            var cellItem = Instantiate(prefabToSpawn, worldPos, Quaternion.identity);
+            var cellItem = Instantiate(prefab, worldPos, Quaternion.identity);
+            
             cellItem.transform.SetParent(parent, true); 
             cellData.FillItem(cellItem);
             cellItem.Initialize(cellData);
             return cellItem;
         }
-
-        private CellItem GetPrefabForType(CellData_SO data)
+        
+        public Passenger SpawnPassenger(PassengerContent content, int row, int col, Transform parent)
         {
-            if (data is Passenger_SO)
-            {
-                return itemPrefabs.FirstOrDefault(p => p is Passenger); 
-            }
-            if (data is Tunnel_SO)
-            {
-                 return itemPrefabs.FirstOrDefault(p => p is Tunnel); 
-            }
+            var passengerPrefab = GetPrefabByContent(content.Type);
+            var passenger = InstantiateAndSetupItem(passengerPrefab, row, col, parent) as Passenger;
             
-            if (data is EmptyCell_SO)
+            if (passenger != null)
             {
-                return null; 
+                // TODO: Passenger Set.Color(content.Color)
             }
+            return passenger;
+        }
 
+        public Tunnel SpawnTunnel(TunnelContent content, int row, int col, Transform parent)
+        {
+            var tunnelPrefab = GetPrefabByContent(content.Type);
+            var tunnel = InstantiateAndSetupItem(tunnelPrefab, row, col, parent) as Tunnel;
+            
+            if (tunnel != null)
+            {
+                // TODO: Tunnel passenger sequence - tunnel.SetPassengerSequence(content.PassengerSequence)
+            }
+            return tunnel;
+        }
+        
+        private CellItem GetPrefabByContent(CellContentType contentType)
+        {
+            switch (contentType)
+            {
+                case CellContentType.Passenger:
+                    return itemPrefabs.FirstOrDefault(p => p is Passenger);
+                
+                case CellContentType.Tunnel:
+                    return itemPrefabs.FirstOrDefault(p => p is Tunnel); 
+            }
             return null;
         }
     }

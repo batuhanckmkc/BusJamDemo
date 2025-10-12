@@ -137,6 +137,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cellPrefab: {fileID: 3689744341711943364, guid: 261421a3c439749c78e28da2306d06c6, type: 3}
+  BoardingCellCount: 5
   RowCount: 5
   ColumnCount: 5
   CellSize: 1.1
@@ -187,7 +188,7 @@ MonoBehaviour:
   gridManager: {fileID: 273104418305386992}
   itemSpawner: {fileID: 5625672799170011667}
   defaultCellSize: 1.1
-  currentLevelData: {fileID: 11400000, guid: b8347de4d11a742d6b9e53cab233d0e3, type: 2}
+  currentLevelData: {fileID: 11400000, guid: f00687d3abd6a46c683deac4ed7cebb4, type: 2}
 --- !u!1 &6706360138294754160
 GameObject:
   m_ObjectHideFlags: 0
@@ -268,8 +269,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88c45c57537445f3ac8914ff43331458, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridManager: {fileID: 273104418305386992}
-  pathfinder: {fileID: 5607168592665723121}
+  gridGenerator: {fileID: 273104418305386992}
   itemPrefabs:
   - {fileID: 4250074555462496017, guid: 3993f3e6567984ec28dd77f441af7bdf, type: 3}
   - {fileID: 7789739288362943648, guid: 625f36a4e438049738f9a19454b4a478, type: 3}

@@ -1,4 +1,3 @@
-using System;
 using BusJamDemo.Utility;
 using UnityEngine;
 
@@ -7,8 +6,13 @@ namespace BusJamDemo.Grid
     public class GridManager : MonoBehaviour
     {
         [SerializeField] private Cell cellPrefab;
-        private CellData[,] _gridCells;
-        public CellData this[int row, int column] => _gridCells[row, column];
+        private CellData[,] _mainCells;
+        private CellData[] _boardingCells;
+
+        public CellData this[int row, int column] => _mainCells[row, column];
+        
+        public int BoardingCellCount;
+
         //Z
         public int RowCount;
         //X
@@ -27,13 +31,25 @@ namespace BusJamDemo.Grid
             EventManager<ItemRemoveData>.Unsubscribe(BoardEvents.OnCellItemRemoved, OnCellItemRemoved);
         }
 
-        public void GenerateGrid(int rows, int columns, float cellSize)
+        public void GenerateBoardingCells()
+        {
+            var gridWidth = CellSize * (BoardingCellCount - 1);
+            var centerOffset = new Vector3(gridWidth / 2, 0, 0);
+            var lastRowZPosition = _mainCells[RowCount - 1, 0].CellPosition.WorldPosition.z * 2;
+            for (int i = 0; i < BoardingCellCount; i++)
+            {
+                var worldPosition = new Vector3(i * CellSize, 0, lastRowZPosition) - centerOffset;
+                Instantiate(cellPrefab, worldPosition, Quaternion.identity, transform);
+            }
+        }
+        
+        public void GenerateMainCells(int rows, int columns, float cellSize)
         {
             RowCount = rows;
             ColumnCount = columns;
             CellSize = cellSize;
             
-            _gridCells = new CellData[RowCount, ColumnCount];
+            _mainCells = new CellData[RowCount, ColumnCount];
             var gridWidth = CellSize * (ColumnCount - 1);
             var gridHeight = CellSize * (RowCount - 1);
             var centerOffset = new Vector3(gridWidth / 2, 0, gridHeight / 2);
@@ -49,42 +65,20 @@ namespace BusJamDemo.Grid
                     var cell = Instantiate(cellPrefab, worldPosition, Quaternion.identity, transform);
                     cellData.FillCell(cell);
                     
-                    _gridCells[i, j] = cellData;
-                }
-            }
-        }
-        
-        public void GenerateGrid()
-        {
-            _gridCells = new CellData[RowCount, ColumnCount];
-            var gridWidth = CellSize * (ColumnCount - 1);
-            var gridHeight = CellSize * (RowCount - 1);
-            var centerOffset = new Vector3(gridWidth / 2, 0, gridHeight / 2);
-            for (int i = 0; i < RowCount; i++)
-            {
-                for (int j = 0; j < ColumnCount; j++)
-                {
-                    var worldPosition = new Vector3(j * CellSize, 0, i * CellSize) - centerOffset;
-                    var cellPosition = new CellPosition(worldPosition, i, j);
-                    var cellData = new CellData(cellPosition);
-                    
-                    var cell = Instantiate(cellPrefab, worldPosition, Quaternion.identity, transform);
-                    cellData.FillCell(cell);
-                    
-                    _gridCells[i, j] = cellData;
+                    _mainCells[i, j] = cellData;
                 }
             }
         }
 
         private void OnCellItemPlaced(ItemPlaceData placeData)
         {
-            var itemPlacedCell = _gridCells[placeData.Coordinates.Row, placeData.Coordinates.Column];
+            var itemPlacedCell = _mainCells[placeData.Coordinates.Row, placeData.Coordinates.Column];
             itemPlacedCell.FillItem(placeData.PlacedItem);
         }
 
         private void OnCellItemRemoved(ItemRemoveData removeData)
         {
-            var itemRemovedCell = _gridCells[removeData.Coordinates.Row, removeData.Coordinates.Column];
+            var itemRemovedCell = _mainCells[removeData.Coordinates.Row, removeData.Coordinates.Column];
             itemRemovedCell.EraseItem();
         }
     }
