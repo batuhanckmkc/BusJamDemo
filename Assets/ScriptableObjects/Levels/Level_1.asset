@@ -1,0 +1,85 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1e7f8bbd7f34042b0a7176b310a33e4, type: 3}
+  m_Name: Level_1
+  m_EditorClassIdentifier: 
+  LevelIndex: 1
+  Rows: 4
+  Columns: 3
+  GridContents:
+  - rid: 6753807628482118243
+  - rid: 6753807628482118244
+  - rid: 6753807628482118245
+  - rid: 6753807628482118222
+  - rid: 6753807628482118246
+  - rid: 6753807628482118224
+  - rid: 6753807628482118225
+  - rid: 6753807628482118226
+  - rid: 6753807628482118227
+  - rid: 6753807628482118247
+  - rid: 6753807628482118248
+  - rid: 6753807628482118249
+  references:
+    version: 2
+    RefIds:
+    - rid: 6753807628482118222
+      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
+      data:
+        Type: -1
+    - rid: 6753807628482118224
+      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
+      data:
+        Type: -1
+    - rid: 6753807628482118225
+      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
+      data:
+        Type: -1
+    - rid: 6753807628482118226
+      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
+      data:
+        Type: -1
+    - rid: 6753807628482118227
+      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
+      data:
+        Type: -1
+    - rid: 6753807628482118243
+      type: {class: PassengerContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
+      data:
+        Type: 5
+        Color: 0
+    - rid: 6753807628482118244
+      type: {class: PassengerContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
+      data:
+        Type: 5
+        Color: 0
+    - rid: 6753807628482118245
+      type: {class: PassengerContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
+      data:
+        Type: 5
+        Color: 0
+    - rid: 6753807628482118246
+      type: {class: TunnelContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
+      data:
+        Type: 10
+        PassengerSequence: 00000000
+    - rid: 6753807628482118247
+      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
+      data:
+        Type: -1
+    - rid: 6753807628482118248
+      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
+      data:
+        Type: -1
+    - rid: 6753807628482118249
+      type: {class: EmptyContent, ns: BusJamDemo.LevelLoad, asm: Assembly-CSharp}
+      data:
+        Type: -1

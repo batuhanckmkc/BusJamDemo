@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace BusJamDemo.LevelLoad
 {
-    [CreateAssetMenu(fileName = "NewLevel", menuName = "BusJamGame/Level Data", order = 0)]
+    [CreateAssetMenu(fileName = "Level_", menuName = "BusJamGame/Level Data", order = 0)]
     public class LevelData_SO : ScriptableObject
     {
         [Header("Level Details")]
@@ -18,9 +18,9 @@ namespace BusJamDemo.LevelLoad
         [SerializeReference]
         public List<CellContent> GridContents; 
     }
-
-        public enum CellContentType { Empty, Passenger, Tunnel }
-
+    
+        public enum CellContentType { Empty = -1, Passenger = 5, Tunnel = 10 }
+        public enum ColorType { None = -1, Red = 0, Blue = 1, Green = 2, Yellow = 3 }
         // Base class for all grid cell data
         [Serializable]
         public abstract class CellContent
