@@ -9,67 +9,100 @@ namespace BusJamDemo.Editor
     public class LevelDataEditor : UnityEditor.Editor
     {
         private LevelData_SO TargetLevel => (LevelData_SO)target;
-        private int requiredLength => TargetLevel.Rows * TargetLevel.Columns;
+        
+        // Ensure minimum 1x1 size for calculation
+        private int CurrentRows => Mathf.Max(1, TargetLevel.Rows);
+        private int CurrentColumns => Mathf.Max(1, TargetLevel.Columns);
+        
+        private int requiredLength => CurrentRows * CurrentColumns;
         private int _selectedCellIndex = -1;
-        // CRITICAL: Defer resizing and saving the list using a flag.
+        
+        // Flag to defer list resizing and saving until the next editor frame
         private bool _needsResizeAndSave = false;
 
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
 
-            // Check if there are changes in drawing Rows, Columns, or other fields
-            EditorGUI.BeginChangeCheck();
-            DrawPropertiesExcluding(serializedObject, "m_Script", "GridContents");
+            // Find properties for Rows and Columns
+            SerializedProperty rowsProp = serializedObject.FindProperty("Rows");
+            SerializedProperty columnsProp = serializedObject.FindProperty("Columns");
+
+            // 1. DRAW NON-GRID SIZE PROPERTIES
+            DrawPropertiesExcluding(serializedObject, "m_Script", "GridContents", "Rows", "Columns");
             
-            // If Rows or Columns have changed, mark the resize flag.
+            // 2. CHECK FOR ROWS/COLUMNS CHANGES ONLY
+            EditorGUI.BeginChangeCheck();
+            
+            // Draw Rows and Columns fields
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PropertyField(rowsProp);
+            EditorGUILayout.PropertyField(columnsProp);
+            EditorGUILayout.EndHorizontal();
+
+            // Did Rows or Columns change?
             if (EditorGUI.EndChangeCheck())
             {
-                // If the size has changed, STOP drawing the list immediately and prepare for deferral
+                // CRITICAL FIX: Clamp values to ensure non-zero size before applying
+                TargetLevel.Rows = Mathf.Max(1, rowsProp.intValue);
+                TargetLevel.Columns = Mathf.Max(1, columnsProp.intValue);
+                
+                // Only set the resize flag if Rows or Columns changed and the current length is incorrect
                 if (TargetLevel.GridContents == null || TargetLevel.GridContents.Count != requiredLength)
                 {
                     _needsResizeAndSave = true;
                 }
-                // Save other property changes
-                serializedObject.ApplyModifiedProperties();
             }
+            
+            // Apply all property modifications (for all fields drawn above)
+            serializedObject.ApplyModifiedProperties();
             
             EditorGUILayout.Space(10);
             
-            // Delayed Save Check
+            // 3. Delayed Save Check
             if (_needsResizeAndSave)
             {
-                // CRITICAL Defer saving and resizing
-                EditorGUILayout.HelpBox("Grid size has changed. Please wait for resizing...", MessageType.Info);
+                EditorGUILayout.HelpBox("Grid size has changed. Deferring resize and save to next frame.", MessageType.Info);
                 EditorApplication.delayCall += ExecuteDelayedResizeAndSave;
-                _needsResizeAndSave = false; // Reset immediately to prevent repeated calls
+                _needsResizeAndSave = false; 
             }
+            // 4. Normal Grid Drawing - Use the clamped requiredLength
             else if (TargetLevel.GridContents != null && TargetLevel.GridContents.Count == requiredLength)
             {
                 EditorGUILayout.LabelField("--- GRID CONTENTS ---", EditorStyles.boldLabel);
                 DrawGridEditor();
             }
-
-            serializedObject.ApplyModifiedProperties();
         }
 
+        /// <summary>
+        /// Executes the grid resizing and saving on the next editor frame.
+        /// This is the fix for the InvalidOperationException during layout calculation.
+        /// </summary>
         private void ExecuteDelayedResizeAndSave()
         {
-            if (TargetLevel.GridContents == null || TargetLevel.GridContents.Count != requiredLength)
+            if (target == null) return;
+            
+            // Recalculate based on clamped values
+            int currentRequiredLength = CurrentRows * CurrentColumns; 
+
+            if (TargetLevel.GridContents == null || TargetLevel.GridContents.Count != currentRequiredLength)
             {
-                ResizeGridListInternal();
+                ResizeGridListInternal(currentRequiredLength);
                 
                 EditorUtility.SetDirty(TargetLevel);
                 AssetDatabase.SaveAssets(); 
                 
-                EditorUtility.RequestScriptReload();
+                Repaint();
             }
         }
         
-        private void ResizeGridListInternal()
+        /// <summary>
+        /// Resizes the GridContents list, preserving existing data where possible.
+        /// </summary>
+        private void ResizeGridListInternal(int newLength)
         {
-            var newList = new List<CellContent>(requiredLength);
-            for (int i = 0; i < requiredLength; i++)
+            var newList = new List<CellContent>(newLength);
+            for (int i = 0; i < newLength; i++)
             {
                 if (i < TargetLevel.GridContents.Count && TargetLevel.GridContents[i] != null)
                 {
@@ -83,13 +116,18 @@ namespace BusJamDemo.Editor
             TargetLevel.GridContents = newList;
         }
 
+        /// <summary>
+        /// Draws the grid of clickable buttons in the Inspector.
+        /// </summary>
         private void DrawGridEditor()
         {
-            int columns = TargetLevel.Columns;
+            // Use CurrentColumns here to avoid division by zero
+            int columns = CurrentColumns;
             
             EditorGUI.BeginChangeCheck();
+            
             EditorGUILayout.BeginVertical("Box");
-            for (int i = 0; i < TargetLevel.Rows; i++)
+            for (int i = 0; i < CurrentRows; i++) // Use CurrentRows
             {
                 EditorGUILayout.BeginHorizontal();
                 for (int j = 0; j < columns; j++)
@@ -114,6 +152,9 @@ namespace BusJamDemo.Editor
             }
         }
         
+        /// <summary>
+        /// Draws a single cell as a clickable button showing its type and coordinates.
+        /// </summary>
         private void DrawCellButton(int index, int columns)
         {
             CellContent currentContent = TargetLevel.GridContents[index];
@@ -140,13 +181,17 @@ namespace BusJamDemo.Editor
             GUI.backgroundColor = Color.white;
         }
 
+        /// <summary>
+        /// Draws the detail panel for the currently selected cell, allowing type and data modification.
+        /// </summary>
         private void DrawCellDetails(int index)
         {
             CellContent currentContent = TargetLevel.GridContents[index];
 
             EditorGUILayout.BeginVertical("HelpBox");
             
-            EditorGUILayout.LabelField($"--- Cell Details: ({index / TargetLevel.Columns}, {index % TargetLevel.Columns}) ---", EditorStyles.boldLabel);
+            // Use CurrentColumns in the display string
+            EditorGUILayout.LabelField($"--- Cell Details: ({index / CurrentColumns}, {index % CurrentColumns}) ---", EditorStyles.boldLabel);
             
             CellContentType selectedType = (CellContentType)EditorGUILayout.EnumPopup("Cell Type", currentContent.Type);
             
@@ -199,6 +244,9 @@ namespace BusJamDemo.Editor
             EditorGUILayout.EndVertical();
         }
         
+        /// <summary>
+        /// Provides a visual color hint for the cell button based on its content type.
+        /// </summary>
         private Color GetColorForCellType(CellContentType type)
         {
             switch (type)
@@ -209,6 +257,9 @@ namespace BusJamDemo.Editor
             }
         }
         
+        /// <summary>
+        /// Creates a new POCO (CellContent) object based on the selected type.
+        /// </summary>
         private CellContent CreateNewContentObject(CellContentType type)
         {
             switch (type)
