@@ -30,9 +30,6 @@ namespace BusJamDemo.Grid
             var path = Pathfinder.Instance.GetClosestPathToExit(CellData.CellPosition);
             if (path != null && path.Count > 0)
             {
-                var itemPlaceData = new ItemPlaceData(this, path[^1]);
-                EventManager<ItemPlaceData>.Execute(GameplayEvents.OnCellItemPlaced, itemPlaceData);
-
                 CanClick = false;
                 MoveAlongPath(path); 
             }
@@ -63,9 +60,7 @@ namespace BusJamDemo.Grid
             else
             {
                 var targetBoardingCell = GridManager.Instance.GetEligibleBoardingCell();
-                var itemPlaceData = new ItemPlaceData(this, targetBoardingCell.CellPosition);
-                EventManager<ItemPlaceData>.Execute(GameplayEvents.OnCellItemPlaced, itemPlaceData);
-                
+                targetBoardingCell.FillItem(this);
                 transform.DOMove(targetBoardingCell.CellPosition.WorldPosition, 1f);
             }
         }

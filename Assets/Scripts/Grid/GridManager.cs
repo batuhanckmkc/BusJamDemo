@@ -88,12 +88,6 @@ namespace BusJamDemo.Grid
         {
             return _boardingCells.FirstOrDefault(cellData => !cellData.HasItem);
         }
-
-        public Vector3 GetBoardingCellsMiddlePosition()
-        {
-            var cellsWidth = CellSize * _boardingCells.Count - 1;
-            return new Vector3(cellsWidth / 2, 0, 0);
-        }
         
         private void OnCellItemPlaced(ItemPlaceData placeData)
         {
