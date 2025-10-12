@@ -9,18 +9,42 @@ namespace BusJamDemo.LevelLoad
     {
         [Header("Level Details")]
         public int LevelIndex;
+        public int Time;
         public int Rows = 8;
         public int Columns = 8;
-        
+        [SerializeReference]
+        public BoardingCellContent BoardingCellContent;
+        [SerializeReference]
+        public List<BusContent> BusContents = new (); 
         [Header("--- GAME MECHANICS DATA ---")]
-        
+
         [Tooltip("Stores the type and data of each cell in the grid.")]
         [SerializeReference]
         public List<CellContent> GridContents; 
     }
     
         public enum CellContentType { Empty = -1, Passenger = 5, Tunnel = 10 }
-        public enum ColorType { None = -1, Red = 0, Blue = 1, Green = 2, Yellow = 3 }
+        public enum ColorType { Red = 0, Blue = 1, Green = 2, Yellow = 3 }
+        public enum PassengerType { Standard = 0, Vip = 5 }
+    
+        [Serializable]
+        public class BusDefinitionData : BusContent
+        {
+            public List<PassengerContent> RequiredPassengerSequence = new List<PassengerContent>();
+        }
+        
+        [Serializable]
+        public abstract class BusContent
+        {
+            public ColorType Color;
+        }
+        
+        [Serializable]
+        public class BoardingCellContent
+        {
+            public int DefaultBoardingCellCount = 5;
+        }
+
         // Base class for all grid cell data
         [Serializable]
         public abstract class CellContent
@@ -32,6 +56,7 @@ namespace BusJamDemo.LevelLoad
         [Serializable]
         public class PassengerContent : CellContent
         {
+            public PassengerType PassengerType = PassengerType.Standard;
             public ColorType Color = ColorType.Red;
             public override string GetTypeName() => "Passenger";
         }

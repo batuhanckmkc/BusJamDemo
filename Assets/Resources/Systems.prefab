@@ -188,7 +188,7 @@ MonoBehaviour:
   gridManager: {fileID: 273104418305386992}
   itemSpawner: {fileID: 5625672799170011667}
   defaultCellSize: 1.1
-  currentLevelData: {fileID: 11400000, guid: 7b4d02d3297924d14b734389234d95f8, type: 2}
+  currentLevelData: {fileID: 11400000, guid: 95b61b8b0a21d4efa981613023d48c16, type: 2}
 --- !u!1 &6706360138294754160
 GameObject:
   m_ObjectHideFlags: 0

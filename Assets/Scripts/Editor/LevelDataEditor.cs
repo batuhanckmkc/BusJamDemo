@@ -2,6 +2,7 @@ using BusJamDemo.LevelLoad;
 using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq; 
 
 namespace BusJamDemo.Editor
 {
@@ -24,14 +25,23 @@ namespace BusJamDemo.Editor
         {
             serializedObject.Update();
 
-            // Find properties for Rows and Columns
+            // Find all required properties
+            SerializedProperty levelIndexProp = serializedObject.FindProperty("LevelIndex");
+            SerializedProperty levelTimeProp = serializedObject.FindProperty("Time");
             SerializedProperty rowsProp = serializedObject.FindProperty("Rows");
             SerializedProperty columnsProp = serializedObject.FindProperty("Columns");
-
-            // 1. DRAW NON-GRID SIZE PROPERTIES
-            DrawPropertiesExcluding(serializedObject, "m_Script", "GridContents", "Rows", "Columns");
+            SerializedProperty boardingCellProp = serializedObject.FindProperty(nameof(TargetLevel.BoardingCellContent));
+            SerializedProperty busContentsProp = serializedObject.FindProperty(nameof(TargetLevel.BusContents));
             
-            // 2. CHECK FOR ROWS/COLUMNS CHANGES ONLY
+            
+            EditorGUILayout.LabelField("--- Level Details ---", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(levelIndexProp);
+            EditorGUILayout.PropertyField(levelTimeProp);
+
+            EditorGUILayout.Space(5);
+
+            EditorGUILayout.LabelField("--- Grid Size ---", EditorStyles.boldLabel);
+            
             EditorGUI.BeginChangeCheck();
             
             // Draw Rows and Columns fields
@@ -43,40 +53,95 @@ namespace BusJamDemo.Editor
             // Did Rows or Columns change?
             if (EditorGUI.EndChangeCheck())
             {
-                // CRITICAL FIX: Clamp values to ensure non-zero size before applying
                 TargetLevel.Rows = Mathf.Max(1, rowsProp.intValue);
                 TargetLevel.Columns = Mathf.Max(1, columnsProp.intValue);
                 
-                // Only set the resize flag if Rows or Columns changed and the current length is incorrect
                 if (TargetLevel.GridContents == null || TargetLevel.GridContents.Count != requiredLength)
                 {
                     _needsResizeAndSave = true;
                 }
             }
             
-            // Apply all property modifications (for all fields drawn above)
             serializedObject.ApplyModifiedProperties();
             
             EditorGUILayout.Space(10);
+
+            EditorGUILayout.LabelField("--- GAME MECHANICS DATA ---", EditorStyles.boldLabel);
             
-            // 3. Delayed Save Check
+            if (boardingCellProp.managedReferenceValue == null)
+            {
+                EditorGUILayout.HelpBox("Boarding Cell Content (Tekil obje) alanı boş. Lütfen bir somut sınıf örneği oluşturun.", MessageType.Warning);
+                if (GUILayout.Button("Initialize Boarding Content"))
+                {
+                    TargetLevel.BoardingCellContent = new BoardingCellContent(); 
+                    EditorUtility.SetDirty(TargetLevel);
+                    serializedObject.Update(); 
+                }
+            }
+            else
+            {
+                EditorGUILayout.PropertyField(boardingCellProp, true); 
+            }
+
+            EditorGUILayout.PropertyField(busContentsProp, true);
+            
+            DrawBusContentInitializer();
+            if (busContentsProp.isExpanded && TargetLevel.BusContents != null && TargetLevel.BusContents.Any(x => x == null))
+            {
+                 EditorGUILayout.HelpBox("Bus Contents listesinde 'None' yazan bozuk elemanlar var. Lütfen 'Element X' yazan bozuk elemanları silin ve yukarıdaki butonlar ile yeniden ekleyin.", MessageType.Error);
+            }
+            
+            EditorGUILayout.Space(10);
+            
             if (_needsResizeAndSave)
             {
                 EditorGUILayout.HelpBox("Grid size has changed. Deferring resize and save to next frame.", MessageType.Info);
                 EditorApplication.delayCall += ExecuteDelayedResizeAndSave;
                 _needsResizeAndSave = false; 
             }
-            // 4. Normal Grid Drawing - Use the clamped requiredLength
             else if (TargetLevel.GridContents != null && TargetLevel.GridContents.Count == requiredLength)
             {
                 EditorGUILayout.LabelField("--- GRID CONTENTS ---", EditorStyles.boldLabel);
                 DrawGridEditor();
             }
+            serializedObject.ApplyModifiedProperties();
         }
 
         /// <summary>
+        /// Adds BusDefinitionData into Bus Contents List
+        /// </summary>
+        private void DrawBusContentInitializer()
+        {
+            EditorGUILayout.Space(5);
+            EditorGUILayout.LabelField("Add Bus Content Manually:", EditorStyles.miniBoldLabel);
+            
+            EditorGUILayout.BeginHorizontal();
+            
+            if (GUILayout.Button("Add New Bus Definition", EditorStyles.miniButton))
+            {
+                TargetLevel.BusContents.Add(new BusDefinitionData()); 
+                
+                EditorUtility.SetDirty(TargetLevel);
+                serializedObject.ApplyModifiedProperties();
+                Repaint(); 
+            }
+            
+            if (TargetLevel.BusContents.Count > 0 && GUILayout.Button("Clear All Buses", EditorStyles.miniButton))
+            {
+                if(EditorUtility.DisplayDialog("Confirm Clear", "Are you sure you want to clear ALL bus definitions?", "Yes", "No"))
+                {
+                    TargetLevel.BusContents.Clear();
+                    EditorUtility.SetDirty(TargetLevel);
+                    serializedObject.ApplyModifiedProperties();
+                    Repaint(); 
+                }
+            }
+            
+            EditorGUILayout.EndHorizontal();
+        }
+        
+        /// <summary>
         /// Executes the grid resizing and saving on the next editor frame.
-        /// This is the fix for the InvalidOperationException during layout calculation.
         /// </summary>
         private void ExecuteDelayedResizeAndSave()
         {
@@ -106,10 +171,12 @@ namespace BusJamDemo.Editor
             {
                 if (i < TargetLevel.GridContents.Count && TargetLevel.GridContents[i] != null)
                 {
+                    // Preserve existing content
                     newList.Add(TargetLevel.GridContents[i]);
                 }
                 else
                 {
+                    // Fill new or null slots with Empty Content
                     newList.Add(new EmptyContent { Type = CellContentType.Empty });
                 }
             }
@@ -124,6 +191,7 @@ namespace BusJamDemo.Editor
             // Use CurrentColumns here to avoid division by zero
             int columns = CurrentColumns;
             
+            // Check for changes made via button clicks or detail panels
             EditorGUI.BeginChangeCheck();
             
             EditorGUILayout.BeginVertical("Box");
@@ -141,11 +209,13 @@ namespace BusJamDemo.Editor
 
             EditorGUILayout.Space(10);
 
+            // Draw details panel if a cell is selected
             if (_selectedCellIndex != -1 && _selectedCellIndex < requiredLength)
             {
                 DrawCellDetails(_selectedCellIndex);
             }
 
+            // If any cell content/selection changed, mark the asset as dirty
             if (EditorGUI.EndChangeCheck())
             {
                 EditorUtility.SetDirty(TargetLevel);
@@ -161,6 +231,7 @@ namespace BusJamDemo.Editor
             GUIStyle buttonStyle = new GUIStyle(GUI.skin.button);
             Color baseColor = GetColorForCellType(currentContent.Type);
             
+            // Highlight the selected cell
             if (index == _selectedCellIndex)
             {
                 buttonStyle.normal.textColor = Color.yellow;
@@ -172,13 +243,15 @@ namespace BusJamDemo.Editor
             
             string buttonText = $"{currentContent.GetTypeName()}\n({index / columns}, {index % columns})";
 
+            // Calculate button width to fit horizontally
             float buttonWidth = (EditorGUIUtility.currentViewWidth / columns) - 18; 
             if (GUILayout.Button(buttonText, buttonStyle, GUILayout.Width(buttonWidth), GUILayout.Height(40)))
             {
+                // Toggle selection
                 _selectedCellIndex = (_selectedCellIndex == index) ? -1 : index;
             }
             
-            GUI.backgroundColor = Color.white;
+            GUI.backgroundColor = Color.white; // Reset background color
         }
 
         /// <summary>
@@ -193,8 +266,10 @@ namespace BusJamDemo.Editor
             // Use CurrentColumns in the display string
             EditorGUILayout.LabelField($"--- Cell Details: ({index / CurrentColumns}, {index % CurrentColumns}) ---", EditorStyles.boldLabel);
             
+            // Draw Type selection
             CellContentType selectedType = (CellContentType)EditorGUILayout.EnumPopup("Cell Type", currentContent.Type);
             
+            // If type changes, create a new POCO object
             if (selectedType != currentContent.Type)
             {
                 TargetLevel.GridContents[index] = CreateNewContentObject(selectedType);
@@ -203,16 +278,19 @@ namespace BusJamDemo.Editor
 
             EditorGUILayout.Space(5);
             
+            // Draw Type-Specific Details
             if (currentContent.Type == CellContentType.Passenger)
             {
                 PassengerContent passenger = (PassengerContent)currentContent;
                 passenger.Color = (ColorType)EditorGUILayout.EnumPopup("Passenger Color", passenger.Color);
+                passenger.PassengerType = (PassengerType)EditorGUILayout.EnumPopup("Passenger Type", passenger.PassengerType);
             }
             else if (currentContent.Type == CellContentType.Tunnel)
             {
                 TunnelContent tunnel = (TunnelContent)currentContent;
                 EditorGUILayout.LabelField("Passenger Sequence:", EditorStyles.miniLabel);
                 
+                // Sequence management buttons
                 EditorGUILayout.BeginHorizontal();
                 if (GUILayout.Button("Add Passenger (Red)", EditorStyles.miniButton))
                 {
@@ -227,6 +305,7 @@ namespace BusJamDemo.Editor
                 }
                 EditorGUILayout.EndHorizontal();
                 
+                // List and manage sequence items
                 for(int i = 0; i < tunnel.PassengerSequence.Count; i++)
                 {
                     EditorGUILayout.BeginHorizontal();
@@ -238,7 +317,6 @@ namespace BusJamDemo.Editor
                     }
                     EditorGUILayout.EndHorizontal();
                 }
-
             }
             
             EditorGUILayout.EndVertical();
@@ -252,7 +330,7 @@ namespace BusJamDemo.Editor
             switch (type)
             {
                 case CellContentType.Passenger: return new Color(1f, 0.6f, 0.6f);
-                case CellContentType.Tunnel: return new Color(0.6f, 0.6f, 1f); 
+                case CellContentType.Tunnel: return new Color(0.6f, 0.6f, 1f);
                 case CellContentType.Empty: default: return Color.grey * 0.8f; 
             }
         }
