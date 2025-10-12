@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using BusJamDemo.Grid;
 using BusJamDemo.LevelLoad;
+using BusJamDemo.Utility;
 using DG.Tweening;
 using UnityEngine;
 
@@ -22,8 +23,23 @@ namespace BusJamDemo.Bus
             {
                 Destroy(gameObject);
             }
+            EventManager<Bus>.Subscribe(GameplayEvents.OnBusFull, OnBusFull);
         }
 
+        private void OnDestroy()
+        {
+            EventManager<Bus>.Unsubscribe(GameplayEvents.OnBusFull, OnBusFull);
+        }
+
+        private void OnBusFull(Bus bus)
+        {
+            Buses.Remove(bus);
+            if (Buses.Count > 0)
+            {
+                CurrentBus = Buses[0];
+                MoveBusesToStop(); 
+            }
+        }
         public void CreateBuses()
         {
             var levelData = LevelLoader.Instance.CurrentLevelData;
@@ -56,7 +72,7 @@ namespace BusJamDemo.Bus
             MoveBusesToStop();
         }
         
-        public void MoveBusesToStop()
+        private void MoveBusesToStop()
         {
             float spacing = LevelLoader.Instance.CurrentLevelData.BusSpacingX;
             float duration = 1f;
@@ -65,14 +81,19 @@ namespace BusJamDemo.Bus
             float targetZ = GridManager.Instance.BoardingCells[^1].CellPosition.WorldPosition.z + LevelLoader.Instance.CurrentLevelData.BusSpawnDistance.z;
             float totalItemWidth = busWidth + spacing;
 
+            var movementSequence = DOTween.Sequence();
             for (int i = 0; i < Buses.Count; i++)
             {
                 Bus bus = Buses[i];
 
                 float targetX = -i * totalItemWidth;
                 Vector3 targetPos = new Vector3(targetX, 0, targetZ);
-                bus.transform.DOMove(targetPos, duration).SetEase(Ease.OutCubic);
+                movementSequence.Join(bus.transform.DOMove(targetPos, duration).SetEase(Ease.OutCubic));
             }
+            movementSequence.OnComplete(() =>
+            {
+                EventManager.Execute(GameplayEvents.OnBusArrivedToStop);
+            });
         }
     }
 }

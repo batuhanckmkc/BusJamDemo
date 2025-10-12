@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using BusJamDemo.Bus;
 using BusJamDemo.Core.Input;
@@ -10,14 +11,26 @@ namespace BusJamDemo.Grid
 {
     public class Passenger : CellItem, IClickable, IBlocker
     {
+        public enum PassengerState { GridState, BoardingState, BusState }
         [SerializeField] private SkinnedMeshRenderer skinnedMeshRenderer;
         public bool CanClick { get; set; } = true;
         public PassengerContent PassengerContent;
+        private PassengerState _passengerState = PassengerState.GridState;
         public override void Initialize(CellData cellData, CellContent cellContent)
         {
             PassengerContent = cellContent as PassengerContent;
             skinnedMeshRenderer.material.color = PassengerContent.ColorType.GetColor();
             base.Initialize(cellData, cellContent);
+        }
+
+        private void OnEnable()
+        {
+            EventManager.Subscribe(GameplayEvents.OnBusArrivedToStop, CheckPassengerAvailability);
+        }
+
+        private void OnDisable()
+        {
+            EventManager.Unsubscribe(GameplayEvents.OnBusArrivedToStop, CheckPassengerAvailability);
         }
 
         public void HandleClick()
@@ -49,20 +62,51 @@ namespace BusJamDemo.Grid
             followPathSequence.OnComplete(DecidePath);
         }
 
+        private void CheckPassengerAvailability()
+        {
+            if (_passengerState != PassengerState.BoardingState || !BusController.Instance.CurrentBus.CanGetOn(this))
+            {
+                return;
+            }
+            MoveBus();
+        }
+        
         private void DecidePath()
         {
-            var isGetOn = BusController.Instance.CurrentBus.TryGetOn(this);
-            if (isGetOn)
+            var canGetOn = BusController.Instance.CurrentBus.CanGetOn(this);
+            if (canGetOn)
             {
-                EventManager<ItemRemoveData>.Execute(GameplayEvents.OnCellItemRemoved, new ItemRemoveData(CellData.CellPosition));
-                transform.DOJump(BusController.Instance.CurrentBus.transform.position, 1f, 1, 1f);
+                MoveBus();
             }
             else
             {
-                var targetBoardingCell = GridManager.Instance.GetEligibleBoardingCell();
-                targetBoardingCell.FillItem(this);
-                transform.DOMove(targetBoardingCell.CellPosition.WorldPosition, 1f);
+                MoveBoardingCell();
             }
+        }
+
+        private void MoveBus()
+        {
+            BusController.Instance.CurrentBus.GetOn(this);
+            EventManager<ItemRemoveData>.Execute(GameplayEvents.OnCellItemRemoved, new ItemRemoveData(CellData.CellPosition));
+            transform.DOMove(BusController.Instance.CurrentBus.transform.position, 2f).OnComplete(() =>
+            {
+                transform.SetParent(BusController.Instance.CurrentBus.transform);
+                BusController.Instance.CurrentBus.CheckBusState();
+                SetState(PassengerState.BusState);
+            });   
+        }
+        
+        private void MoveBoardingCell()
+        {
+            var targetBoardingCell = GridManager.Instance.GetEligibleBoardingCell();
+            targetBoardingCell.FillItem(this);
+            transform.DOMove(targetBoardingCell.CellPosition.WorldPosition, 1f);
+            SetState(PassengerState.BoardingState);
+        }
+
+        private void SetState(PassengerState passengerState)
+        {
+            _passengerState = passengerState;
         }
     }
 }

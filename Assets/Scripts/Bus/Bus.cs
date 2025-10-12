@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using BusJamDemo.Grid;
 using BusJamDemo.LevelLoad;
 using BusJamDemo.Utility;
+using DG.Tweening;
 using UnityEngine;
 
 namespace BusJamDemo.Bus
@@ -17,20 +18,24 @@ namespace BusJamDemo.Bus
             _busContent = busContent;
             meshRenderer.material.color = _busContent.ColorType.GetColor();
         }
-        
-        public bool TryGetOn(Passenger passenger)
+
+        public bool CanGetOn(Passenger passenger)
         {
-            if (HasEmptySeat && passenger.CellContent is PassengerContent passengerContent && _busContent.ColorType == passengerContent.ColorType)
-            {
-                Passengers.Add(passenger);
-                return true;
-            }
-            return false;
+            return HasEmptySeat && passenger.CellContent is PassengerContent passengerContent && _busContent.ColorType == passengerContent.ColorType;
+        }
+        
+        public void GetOn(Passenger passenger)
+        {
+            Passengers.Add(passenger);
         }
 
-        public void GetDown(Passenger passenger)
+        public void CheckBusState()
         {
-            Passengers.Remove(passenger);
+            if (!HasEmptySeat && transform.childCount == _busContent.RequiredPassengerSequence.Count)
+            {
+                transform.DOMove(new Vector3(15, transform.position.y, transform.position.z), 2f);
+                EventManager<Bus>.Execute(GameplayEvents.OnBusFull, this);   
+            }
         }
     }
 }

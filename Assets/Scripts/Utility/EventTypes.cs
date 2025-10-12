@@ -4,6 +4,7 @@ namespace BusJamDemo.Utility
     {
         OnCellItemPlaced,
         OnCellItemRemoved,
-        OnBusArrivedToStop
+        OnBusArrivedToStop,
+        OnBusFull
     }
 }
