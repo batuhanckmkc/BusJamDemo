@@ -40,6 +40,7 @@ namespace BusJamDemo.Grid
             if (passenger != null)
             {
                 passenger.SetColor();
+                passenger.SetAnimation(PassengerAnimationState.Idle);
                 PassengerController.Instance.RegisterPassenger(passenger);
             }
             return passenger;

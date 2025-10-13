@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using BusJamDemo.Bus;
 using BusJamDemo.Core.Input;
@@ -9,20 +8,42 @@ using UnityEngine;
 
 namespace BusJamDemo.Grid
 {
+    public enum PassengerGameState { GridState, BoardingState, BusState }
+    public enum PassengerAnimationState { Idle, Run }
     public class Passenger : CellItem, IClickable, IBlocker
     {
-        public enum PassengerState { GridState, BoardingState, BusState }
+        #region Unity
+
         [SerializeField] private SkinnedMeshRenderer skinnedMeshRenderer;
         [SerializeField] private Outline outline;
+        [SerializeField] private Animator animator;
+
+        private static readonly int IdleHash = Animator.StringToHash("Idle");
+        private static readonly int RunHash = Animator.StringToHash("Run");
+        #endregion
+        
         public bool CanClick { get; set; } = true;
         public PassengerContent PassengerContent;
-        private PassengerState _passengerState = PassengerState.GridState;
+        private PassengerGameState _passengerGameState = PassengerGameState.GridState;
         public override void Initialize(CellData cellData, CellContent cellContent)
         {
             PassengerContent = cellContent as PassengerContent;
             base.Initialize(cellData, cellContent);
         }
 
+        public void SetAnimation(PassengerAnimationState animationState)
+        {
+            switch (animationState)
+            {
+                case PassengerAnimationState.Idle:
+                    animator.Play(IdleHash);
+                    break;
+                case PassengerAnimationState.Run:
+                    animator.Play(RunHash);
+                    break;
+            }
+        }
+        
         public void SetColor()
         {
             skinnedMeshRenderer.material.color = PassengerContent.ColorType.GetColor();
@@ -72,6 +93,7 @@ namespace BusJamDemo.Grid
         
         private void MoveAlongPath(List<CellPosition> path)
         {
+            SetAnimation(PassengerAnimationState.Run);
             var followPathSequence = DOTween.Sequence();
             for (int i = 0; i < path.Count; i++)
             {
@@ -82,7 +104,7 @@ namespace BusJamDemo.Grid
 
         private void CheckPassengerAvailability()
         {
-            if (_passengerState != PassengerState.BoardingState || !BusController.Instance.CurrentBus.CanGetOn(this))
+            if (_passengerGameState != PassengerGameState.BoardingState || !BusController.Instance.CurrentBus.CanGetOn(this))
             {
                 return;
             }
@@ -104,6 +126,7 @@ namespace BusJamDemo.Grid
 
         private void MoveBus()
         {
+            SetAnimation(PassengerAnimationState.Run);
             BusController.Instance.CurrentBus.GetOn(this);
             PassengerController.Instance.DeregisterPassenger(this);
             EventManager<ItemRemoveData>.Execute(GameplayEvents.OnCellItemRemoved, new ItemRemoveData(CellData));
@@ -111,8 +134,9 @@ namespace BusJamDemo.Grid
             {
                 transform.SetParent(BusController.Instance.CurrentBus.transform);
                 BusController.Instance.CurrentBus.CheckBusState();
-                SetState(PassengerState.BusState);
+                SetState(PassengerGameState.BusState);
                 UpdateCellData(null);
+                SetAnimation(PassengerAnimationState.Idle);
             });   
         }
         
@@ -121,13 +145,16 @@ namespace BusJamDemo.Grid
             var targetBoardingCell = GridManager.Instance.GetEligibleBoardingCell();
             targetBoardingCell.FillItem(this);
             UpdateCellData(targetBoardingCell);
-            transform.DOMove(targetBoardingCell.CellPosition.WorldPosition, 1f);
-            SetState(PassengerState.BoardingState);
+            SetState(PassengerGameState.BoardingState);
+            transform.DOMove(targetBoardingCell.CellPosition.WorldPosition, 1f).OnComplete(() =>
+            {
+                SetAnimation(PassengerAnimationState.Idle);
+            });
         }
 
-        private void SetState(PassengerState passengerState)
+        private void SetState(PassengerGameState passengerGameState)
         {
-            _passengerState = passengerState;
+            _passengerGameState = passengerGameState;
         }
     }
 }
