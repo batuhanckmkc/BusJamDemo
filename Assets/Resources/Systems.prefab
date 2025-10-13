@@ -56,7 +56,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 966435227286834146}
-  - component: {fileID: 5919566656069767244}
+  - component: {fileID: 8933247055770646442}
   m_Layer: 0
   m_Name: Path Finder
   m_TagString: Untagged
@@ -79,7 +79,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 5150010823740406598}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5919566656069767244
+--- !u!114 &8933247055770646442
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -88,7 +88,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3521590308233889285}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 942ad20b6a584da9a1bb4c677f0f0690, type: 3}
+  m_Script: {fileID: 11500000, guid: 866c40c1e8954097ab5cfb1d517d6737, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   grid: {fileID: 273104418305386992}
@@ -278,7 +278,6 @@ MonoBehaviour:
   gridManager: {fileID: 273104418305386992}
   itemSpawner: {fileID: 5625672799170011667}
   busController: {fileID: 5737646281809508022}
-  defaultCellSize: 1
   currentLevelData: {fileID: 11400000, guid: 95b61b8b0a21d4efa981613023d48c16, type: 2}
 --- !u!1 &6706360138294754160
 GameObject:

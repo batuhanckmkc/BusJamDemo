@@ -17,7 +17,6 @@ namespace BusJamDemo.LevelLoad
         public BoardingCellContent BoardingCellContent;
         [SerializeReference]
         public List<BusContent> BusContents = new (); 
-        [Header("--- GAME MECHANICS DATA ---")]
         public int Rows = 8;
         public int Columns = 8;
         public float CellSize = 0.7f;

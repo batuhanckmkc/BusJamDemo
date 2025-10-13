@@ -47,7 +47,6 @@ namespace BusJamDemo.Grid
         public void SetColor()
         {
             skinnedMeshRenderer.material.color = PassengerContent.ColorType.GetColor();
-            outline.OutlineColor =  PassengerContent.ColorType.GetColor();
         }
         
         public void CheckOutlineVisibility()
