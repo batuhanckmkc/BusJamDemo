@@ -232,7 +232,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a44fbda7f0a4175bd1f2917fe46190c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  busPrefab: {fileID: 837636465906850450, guid: e58732c8f40f945ecb1624e2f39351bf, type: 3}
+  busParentPrefab: {fileID: 837636465906850450, guid: 15b073ab7ce0b4d68a6cac6a09ec9f39, type: 3}
   CurrentBus: {fileID: 0}
   Buses: []
 --- !u!1 &4146778230580253422

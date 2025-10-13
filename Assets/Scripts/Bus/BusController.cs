@@ -9,7 +9,7 @@ namespace BusJamDemo.Bus
 {
     public class BusController : MonoBehaviour
     {
-        [SerializeField] private Bus busPrefab;
+        [SerializeField] private Bus busParentPrefab;
         [HideInInspector] public Bus CurrentBus;
         public List<Bus> Buses = new();
         public static BusController Instance;
@@ -68,7 +68,7 @@ namespace BusJamDemo.Bus
             var busContents = levelData.BusContents;
             int busCount = busContents.Count;
 
-            float busWidth = busPrefab.transform.localScale.x;
+            float busWidth = busParentPrefab.BusTransform.localScale.x;
             float totalItemWidth = busWidth + levelData.BusSpacingX;
 
             float stopZPosition = GridManager.Instance.BoardingCells[^1].CellPosition.WorldPosition.z;
@@ -81,7 +81,7 @@ namespace BusJamDemo.Bus
                 float spawnXOffset = -totalSpanX;
                 spawnX += spawnXOffset;
 
-                var bus = Instantiate(busPrefab, new Vector3(spawnX, 0, spawnZ), Quaternion.identity, transform);
+                var bus = Instantiate(busParentPrefab, new Vector3(spawnX, 0, spawnZ), Quaternion.identity, transform);
 
                 bus.Initialize(busContents[i]);
                 Buses.Add(bus);
@@ -98,7 +98,7 @@ namespace BusJamDemo.Bus
         {
             float spacing = LevelManager.Instance.CurrentLevelData.BusSpacingX;
             float duration = 1f;
-            float busWidth = busPrefab.transform.localScale.x;
+            float busWidth = busParentPrefab.BusTransform.localScale.x;
 
             float targetZ = GridManager.Instance.BoardingCells[^1].CellPosition.WorldPosition.z + LevelManager.Instance.CurrentLevelData.BusSpawnDistance.z;
             float totalItemWidth = busWidth + spacing;

@@ -9,9 +9,11 @@ namespace BusJamDemo.Bus
 {
     public class Bus : MonoBehaviour
     {
+        [SerializeField] private Transform busTransform;
         [SerializeField] private MeshRenderer meshRenderer;
         private readonly List<Passenger> _passengers = new ();
         private bool HasEmptySeat => _passengers.Count < _busContent.RequiredPassengerSequence.Count;
+        public Transform BusTransform => busTransform;
         private BusContent _busContent;
         public void Initialize(BusContent busContent)
         {
@@ -31,7 +33,8 @@ namespace BusJamDemo.Bus
 
         public void CheckBusState()
         {
-            if (!HasEmptySeat && transform.childCount == _busContent.RequiredPassengerSequence.Count)
+            //TODO Refactor child count control
+            if (!HasEmptySeat && transform.childCount == _busContent.RequiredPassengerSequence.Count + 1)
             {
                 EventManager<Bus>.Execute(GameplayEvents.OnBusFull, this);
                 transform.DOMove(new Vector3(15, transform.position.y, transform.position.z), 2f).OnComplete(() =>
