@@ -186,7 +186,7 @@ MonoBehaviour:
   cellPrefab: {fileID: 3689744341711943364, guid: 261421a3c439749c78e28da2306d06c6, type: 3}
   RowCount: 5
   ColumnCount: 5
-  CellSize: 1.1
+  CellSize: 1
 --- !u!1 &4455067566781055061
 GameObject:
   m_ObjectHideFlags: 0
@@ -278,7 +278,7 @@ MonoBehaviour:
   gridManager: {fileID: 273104418305386992}
   itemSpawner: {fileID: 5625672799170011667}
   busController: {fileID: 5737646281809508022}
-  defaultCellSize: 1.1
+  defaultCellSize: 1
   currentLevelData: {fileID: 11400000, guid: 95b61b8b0a21d4efa981613023d48c16, type: 2}
 --- !u!1 &6706360138294754160
 GameObject:
