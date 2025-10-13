@@ -32,6 +32,8 @@ namespace BusJamDemo.Core
             switch (newState)
             {
                 case GameState.StartScreen:
+                    UIManager.Instance.StartScreenUI.Show();
+                    UIManager.Instance.GameplayScreenUI.Hide();
                     break;
                 case GameState.Gameplay:
                     TimerManager.Instance.StartTimer(LevelManager.Instance.CurrentLevelData.Time);

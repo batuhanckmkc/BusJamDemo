@@ -8,6 +8,7 @@ namespace BusJamDemo.Grid
     public class PassengerController : MonoBehaviour
     {
         public static PassengerController Instance { get; private set; }
+        private List<Passenger> _allPassengers = new();
         private readonly List<Passenger> _activePassengers = new();
 
         private void Awake()
@@ -36,6 +37,7 @@ namespace BusJamDemo.Grid
         {
             if (!_activePassengers.Contains(passenger))
             {
+                _allPassengers.Add(passenger);
                 _activePassengers.Add(passenger);
             }
         }
@@ -68,6 +70,16 @@ namespace BusJamDemo.Grid
                     passenger.Stop();
                 }   
             }
+        }
+
+        public void ClearPassengers()
+        {
+            foreach (var passenger in _allPassengers)
+            {
+                Destroy(passenger.gameObject);
+            }
+            _allPassengers.Clear();
+            _activePassengers.Clear();
         }
     }
 }

@@ -30,22 +30,21 @@ namespace BusJamDemo.Bus
         
         private void OnEnable()
         {
-            GameManager.OnGameStateChanged += ClearBusCollection;
             EventManager<Bus>.Subscribe(GameplayEvents.OnBusFull, OnBusFull);
         }
 
         private void OnDisable()
         {
-            GameManager.OnGameStateChanged -= ClearBusCollection;
             EventManager<Bus>.Unsubscribe(GameplayEvents.OnBusFull, OnBusFull);
         }
 
-        private void ClearBusCollection(GameState gameState)
+        public void ClearBuses()
         {
-            if (gameState == GameState.LevelFail)
+            foreach (var bus in Buses)
             {
-                Buses.Clear();
+                Destroy(bus.gameObject);
             }
+            Buses.Clear();
         }
         
         private void OnBusFull(Bus bus)

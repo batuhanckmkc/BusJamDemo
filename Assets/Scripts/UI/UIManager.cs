@@ -9,6 +9,7 @@ namespace BusJamDemo.UI
         [SerializeField] private GameplayScreenUI gameplayScreen;
         [SerializeField] private EndGameScreenUI endGameScreen;
 
+        public StartScreenUI StartScreenUI => startScreen;
         public GameplayScreenUI GameplayScreenUI => gameplayScreen;
         public EndGameScreenUI EndGameScreenUI => endGameScreen;
         public static UIManager Instance;

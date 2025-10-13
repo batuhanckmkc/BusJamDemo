@@ -26,21 +26,31 @@ namespace BusJamDemo.Core
             {
                 Destroy(gameObject);
             }
+        }
+
+        private void Start()
+        {
             InitializeLevelIndex();
             LoadCurrentLevel();
         }
 
         private void OnEnable()
         {
-            GameManager.OnGameStateChanged += OnGameStateChanged;
+            GameManager.OnGameStateChanged += OnGameStateChange;
         }
 
         private void OnDisable()
         {
-            GameManager.OnGameStateChanged -= OnGameStateChanged;
+            GameManager.OnGameStateChanged -= OnGameStateChange;
         }
 
-        private void OnGameStateChanged(GameState newState) { }
+        private void OnGameStateChange(GameState gameState)
+        {
+            if (gameState == GameState.StartScreen)
+            {
+                LoadCurrentLevel();
+            }
+        }
 
         private void InitializeLevelIndex()
         {
@@ -62,11 +72,6 @@ namespace BusJamDemo.Core
         {
             _currentLevelIndex++;
             PlayerPrefs.SetInt(LevelSaveKey, _currentLevelIndex);
-
-            if (_currentLevelIndex < uniqueLevels.Length)
-            {
-                GameManager.Instance.UpdateGameState(GameState.Gameplay);
-            }
         }
     }
 }

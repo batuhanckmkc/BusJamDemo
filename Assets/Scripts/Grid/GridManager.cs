@@ -9,10 +9,10 @@ namespace BusJamDemo.Grid
     {
         [SerializeField] private Cell cellPrefab;
         private CellData[,] _mainCells;
-        public CellData[,] MainCells => _mainCells;
         private readonly List<CellData> _boardingCells = new();
         public List<CellData> BoardingCells => _boardingCells;
         public CellData this[int row, int column] => _mainCells[row, column];
+        private readonly List<Cell> _allCells = new();
         private readonly Dictionary<int, CellData> _allCellsById = new(); 
         //Z
         public int RowCount;
@@ -30,11 +30,15 @@ namespace BusJamDemo.Grid
             {
                 Destroy(gameObject);
             }
+        }
+
+        private void OnEnable()
+        {
             EventManager<ItemPlaceData>.Subscribe(GameplayEvents.OnCellItemPlaced, OnCellItemPlaced);
             EventManager<ItemRemoveData>.Subscribe(GameplayEvents.OnCellItemRemoved, OnCellItemRemoved);
         }
 
-        private void OnDestroy()
+        private void OnDisable()
         {
             EventManager<ItemPlaceData>.Unsubscribe(GameplayEvents.OnCellItemPlaced, OnCellItemPlaced);
             EventManager<ItemRemoveData>.Unsubscribe(GameplayEvents.OnCellItemRemoved, OnCellItemRemoved);
@@ -54,6 +58,7 @@ namespace BusJamDemo.Grid
                 
                 var boardingCell = Instantiate(cellPrefab, worldPosition, Quaternion.identity, transform);
                 cellData.FillCell(boardingCell);
+                _allCells.Add(boardingCell);
                 _allCellsById.Add(cellData.CellID, cellData); 
                 _boardingCells.Add(cellData);
             }
@@ -80,12 +85,25 @@ namespace BusJamDemo.Grid
                     
                     var cell = Instantiate(cellPrefab, worldPosition, Quaternion.identity, transform);
                     cellData.FillCell(cell);
+                    _allCells.Add(cell);
                     _allCellsById.Add(cellData.CellID, cellData); 
                     _mainCells[i, j] = cellData;
                 }
             }
         }
 
+        public void ClearGrid()
+        {
+            foreach (var cell in _allCells)
+            {
+                Destroy(cell.gameObject);
+            }
+            _allCells.Clear();
+            _boardingCells.Clear();
+            _allCellsById.Clear();
+            _mainCells = null;
+        }
+        
         public bool AllBoardingCellsIsBusy()
         {
             return _boardingCells.All(cellData => cellData.HasItem);

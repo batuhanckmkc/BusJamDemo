@@ -48,13 +48,14 @@ namespace BusJamDemo.UI
 
         private void OnRestartButtonClicked()
         {
-            GameManager.Instance.UpdateGameState(GameState.Gameplay);
+            GameManager.Instance.UpdateGameState(GameState.StartScreen);
             Hide();
         }
 
         private void OnNextLevelButtonClicked()
         {
             LevelManager.Instance.AdvanceToNextLevel();
+            GameManager.Instance.UpdateGameState(GameState.StartScreen);
             Hide();
         }
     }
