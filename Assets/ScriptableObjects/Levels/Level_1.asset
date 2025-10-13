@@ -14,8 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   LevelIndex: 1
   Time: 60
-  Rows: 5
-  Columns: 5
   BusSpawnDistance: {x: 0, y: 0, z: 5}
   BusSpacingX: 1
   BoardingCellContent:
@@ -23,6 +21,9 @@ MonoBehaviour:
   BusContents:
   - rid: 6753807634836226427
   - rid: 6753807634836226428
+  Rows: 5
+  Columns: 5
+  CellSize: 1.1
   GridContents:
   - rid: 6753807639111011264
   - rid: 6753807639111011254

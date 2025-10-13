@@ -32,6 +32,7 @@ namespace BusJamDemo.Editor
             SerializedProperty busSpawnDistance = serializedObject.FindProperty("BusSpawnDistance");
             SerializedProperty busSpacingX = serializedObject.FindProperty("BusSpacingX");
 
+            SerializedProperty cellSizeProp = serializedObject.FindProperty("CellSize");
             SerializedProperty rowsProp = serializedObject.FindProperty("Rows");
             SerializedProperty columnsProp = serializedObject.FindProperty("Columns");
             SerializedProperty boardingCellProp = serializedObject.FindProperty(nameof(TargetLevel.BoardingCellContent));
@@ -77,6 +78,7 @@ namespace BusJamDemo.Editor
             EditorGUILayout.LabelField("--- GRID CONTENTS & SIZE ---", EditorStyles.boldLabel);
             
             EditorGUI.BeginChangeCheck();
+            EditorGUILayout.PropertyField(cellSizeProp);
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.PropertyField(rowsProp);
             EditorGUILayout.PropertyField(columnsProp);

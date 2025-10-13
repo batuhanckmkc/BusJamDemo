@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace BusJamDemo.LevelLoad
 {
@@ -11,8 +10,6 @@ namespace BusJamDemo.LevelLoad
         [Header("Level Details")]
         public int LevelIndex;
         public int Time;
-        public int Rows = 8;
-        public int Columns = 8;
         public Vector3 BusSpawnDistance;
         public float BusSpacingX = 5f;
             
@@ -21,7 +18,9 @@ namespace BusJamDemo.LevelLoad
         [SerializeReference]
         public List<BusContent> BusContents = new (); 
         [Header("--- GAME MECHANICS DATA ---")]
-
+        public int Rows = 8;
+        public int Columns = 8;
+        public float CellSize = 0.7f;
         [Tooltip("Stores the type and data of each cell in the grid.")]
         [SerializeReference]
         public List<CellContent> GridContents; 

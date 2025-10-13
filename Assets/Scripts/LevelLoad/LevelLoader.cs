@@ -12,8 +12,6 @@ namespace BusJamDemo.LevelLoad
         [SerializeField] private GridManager gridManager;
         [SerializeField] private CellItemSpawner itemSpawner;
         [SerializeField] private BusController busController;
-
-        [SerializeField] private float defaultCellSize = 1f;
         
         [Header("Load Level")]
         [SerializeField] private LevelData_SO currentLevelData;
@@ -52,7 +50,7 @@ namespace BusJamDemo.LevelLoad
                 return;
             }
 
-            gridManager.GenerateMainCells(levelData.Rows, levelData.Columns, defaultCellSize);
+            gridManager.GenerateMainCells(levelData.Rows, levelData.Columns, levelData.CellSize);
             gridManager.GenerateBoardingCells(levelData.BoardingCellContent.DefaultBoardingCellCount);
             busController.CreateBuses();
 
