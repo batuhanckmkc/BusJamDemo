@@ -1,4 +1,3 @@
-using System;
 using BusJamDemo.Bus;
 using UnityEngine;
 using BusJamDemo.Grid;
@@ -13,37 +12,16 @@ namespace BusJamDemo.LevelLoad
         [SerializeField] private CellItemSpawner itemSpawner;
         [SerializeField] private BusController busController;
         
-        [Header("Load Level")]
-        [SerializeField] private LevelData_SO currentLevelData;
-        public LevelData_SO CurrentLevelData => currentLevelData;
-
-        public static LevelLoader Instance;
-        private void Awake()
+        public void LoadLevel(LevelData_SO levelData)
         {
-            if (Instance == null)
+            if (levelData == null)
             {
-                Instance = this;
+                Debug.LogError("[LevelLoader] LevelData_SO is null. Cannot load level.");
+                return;
             }
-            else
-            {
-                Destroy(gameObject);
-            }
-        }
+            
+            ClearPreviousLevel();
 
-        private void Start()
-        {
-            if (currentLevelData != null)
-            {
-                LoadLevel(currentLevelData);
-            }
-            else
-            {
-                Debug.LogError("[LevelLoader] No LevelData_SO assigned to load!");
-            }
-        }
-
-        private void LoadLevel(LevelData_SO levelData)
-        {
             if (levelData.GridContents == null || levelData.GridContents.Count == 0)
             {
                 Debug.LogError("[LevelLoader] LevelData's GridContents list is empty or null.");
@@ -53,7 +31,7 @@ namespace BusJamDemo.LevelLoad
             gridManager.GenerateMainCells(levelData.Rows, levelData.Columns, levelData.CellSize);
             gridManager.GenerateBoardingCells(levelData.BoardingCellContent.DefaultBoardingCellCount);
             busController.CreateBuses();
-
+            
             int requiredLength = levelData.Rows * levelData.Columns;
 
             for (int i = 0; i < levelData.Rows; i++)
@@ -72,32 +50,33 @@ namespace BusJamDemo.LevelLoad
                     SpawnCellItem(cellContent, i, j);
                 }
             }
+            
             Debug.Log($"Level '{levelData.name}' loaded successfully.");
             EventManager.Execute(GameplayEvents.LevelLoaded);
         }
         
+        private void ClearPreviousLevel()
+        {
+            // gridManager.ClearGrid(); 
+            // busController.ClearBuses();
+            //PassengerManager.ClearAll();
+        }
+
         private void SpawnCellItem(CellContent content, int row, int col)
         {
-            CellItem spawnedItem = null;
-            
             switch (content.Type)
             {
                 case CellContentType.Passenger:
                     var pContent = (PassengerContent)content;
-                    spawnedItem = itemSpawner.SpawnPassenger(pContent, row, col, gridManager.transform);
+                    itemSpawner.SpawnPassenger(pContent, row, col, gridManager.transform);
                     break;
                 case CellContentType.Tunnel:
                     var tContent = (TunnelContent)content;
-                    spawnedItem = itemSpawner.SpawnTunnel(tContent, row, col, gridManager.transform);
+                    itemSpawner.SpawnTunnel(tContent, row, col, gridManager.transform);
                     break;
                 case CellContentType.Empty:
                 default:
                     break;
-            }
-    
-            if (spawnedItem != null)
-            {
-                Debug.Log($"[LevelLoader] Item spawned: {content.Type} at ({row}, {col})");
             }
         }
     }

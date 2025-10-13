@@ -1,4 +1,4 @@
-namespace BusJamDemo.Grid
+namespace BusJamDemo.Core.Input
 {
     public interface IBlocker
     {

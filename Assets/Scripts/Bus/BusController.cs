@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using BusJamDemo.Core;
 using BusJamDemo.Grid;
 using BusJamDemo.LevelLoad;
 using BusJamDemo.Utility;
@@ -39,10 +40,14 @@ namespace BusJamDemo.Bus
                 CurrentBus = Buses[0];
                 MoveBusesToStop(); 
             }
+            else
+            {
+                GameManager.Instance.UpdateGameState(GameState.LevelComplete);
+            }
         }
         public void CreateBuses()
         {
-            var levelData = LevelLoader.Instance.CurrentLevelData;
+            var levelData = LevelManager.Instance.CurrentLevelData;
             var busContents = levelData.BusContents;
             int busCount = busContents.Count;
 
@@ -74,11 +79,11 @@ namespace BusJamDemo.Bus
         
         private void MoveBusesToStop()
         {
-            float spacing = LevelLoader.Instance.CurrentLevelData.BusSpacingX;
+            float spacing = LevelManager.Instance.CurrentLevelData.BusSpacingX;
             float duration = 1f;
             float busWidth = busPrefab.transform.localScale.x;
 
-            float targetZ = GridManager.Instance.BoardingCells[^1].CellPosition.WorldPosition.z + LevelLoader.Instance.CurrentLevelData.BusSpawnDistance.z;
+            float targetZ = GridManager.Instance.BoardingCells[^1].CellPosition.WorldPosition.z + LevelManager.Instance.CurrentLevelData.BusSpawnDistance.z;
             float totalItemWidth = busWidth + spacing;
 
             var movementSequence = DOTween.Sequence();
