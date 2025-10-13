@@ -10,8 +10,8 @@ namespace BusJamDemo.Bus
     public class Bus : MonoBehaviour
     {
         [SerializeField] private MeshRenderer meshRenderer;
-        public List<Passenger> Passengers = new ();
-        public bool HasEmptySeat => Passengers.Count < _busContent.RequiredPassengerSequence.Count;
+        private readonly List<Passenger> _passengers = new ();
+        private bool HasEmptySeat => _passengers.Count < _busContent.RequiredPassengerSequence.Count;
         private BusContent _busContent;
         public void Initialize(BusContent busContent)
         {
@@ -26,15 +26,18 @@ namespace BusJamDemo.Bus
         
         public void GetOn(Passenger passenger)
         {
-            Passengers.Add(passenger);
+            _passengers.Add(passenger);
         }
 
         public void CheckBusState()
         {
             if (!HasEmptySeat && transform.childCount == _busContent.RequiredPassengerSequence.Count)
             {
-                transform.DOMove(new Vector3(15, transform.position.y, transform.position.z), 2f);
-                EventManager<Bus>.Execute(GameplayEvents.OnBusFull, this);   
+                EventManager<Bus>.Execute(GameplayEvents.OnBusFull, this);
+                transform.DOMove(new Vector3(15, transform.position.y, transform.position.z), 2f).OnComplete(() =>
+                {
+                    Destroy(gameObject);
+                });
             }
         }
     }

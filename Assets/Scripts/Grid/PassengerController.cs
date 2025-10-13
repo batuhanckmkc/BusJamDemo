@@ -65,8 +65,7 @@ namespace BusJamDemo.Grid
             {
                 foreach (var passenger in _activePassengers)
                 {
-                    passenger.CanClick = false;
-                    passenger.SetAnimation(PassengerAnimationState.Idle);
+                    passenger.Stop();
                 }   
             }
         }

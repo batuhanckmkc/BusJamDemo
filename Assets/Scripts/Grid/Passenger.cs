@@ -31,7 +31,7 @@ namespace BusJamDemo.Grid
             PassengerContent = cellContent as PassengerContent;
             base.Initialize(cellData, cellContent);
         }
-
+        
         public void SetAnimation(PassengerAnimationState animationState)
         {
             switch (animationState)
@@ -102,6 +102,12 @@ namespace BusJamDemo.Grid
             followPathSequence.OnComplete(DecidePath);
         }
 
+        public void Stop()
+        {
+            CanClick = false;
+            SetAnimation(PassengerAnimationState.Idle);
+        }
+        
         private void CheckPassengerAvailability()
         {
             if (_passengerGameState != PassengerGameState.BoardingState || !BusController.Instance.CurrentBus.CanGetOn(this))

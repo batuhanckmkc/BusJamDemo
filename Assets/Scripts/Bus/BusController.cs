@@ -26,14 +26,28 @@ namespace BusJamDemo.Bus
             {
                 Destroy(gameObject);
             }
+        }
+        
+        private void OnEnable()
+        {
+            GameManager.OnGameStateChanged += ClearBusCollection;
             EventManager<Bus>.Subscribe(GameplayEvents.OnBusFull, OnBusFull);
         }
 
-        private void OnDestroy()
+        private void OnDisable()
         {
+            GameManager.OnGameStateChanged -= ClearBusCollection;
             EventManager<Bus>.Unsubscribe(GameplayEvents.OnBusFull, OnBusFull);
         }
 
+        private void ClearBusCollection(GameState gameState)
+        {
+            if (gameState == GameState.LevelFail)
+            {
+                Buses.Clear();
+            }
+        }
+        
         private void OnBusFull(Bus bus)
         {
             Buses.Remove(bus);
@@ -47,6 +61,7 @@ namespace BusJamDemo.Bus
                 GameManager.Instance.UpdateGameState(GameState.LevelComplete);
             }
         }
+        
         public void CreateBuses()
         {
             var levelData = LevelManager.Instance.CurrentLevelData;
