@@ -2,6 +2,7 @@ using System;
 using BusJamDemo.Bus;
 using UnityEngine;
 using BusJamDemo.Grid;
+using BusJamDemo.Utility;
 
 namespace BusJamDemo.LevelLoad
 {
@@ -74,6 +75,7 @@ namespace BusJamDemo.LevelLoad
                 }
             }
             Debug.Log($"Level '{levelData.name}' loaded successfully.");
+            EventManager.Execute(GameplayEvents.LevelLoaded);
         }
         
         private void SpawnCellItem(CellContent content, int row, int col)

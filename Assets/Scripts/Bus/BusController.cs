@@ -10,7 +10,7 @@ namespace BusJamDemo.Bus
     public class BusController : MonoBehaviour
     {
         [SerializeField] private Bus busPrefab;
-        public Bus CurrentBus;
+        [HideInInspector] public Bus CurrentBus;
         public List<Bus> Buses = new();
         public static BusController Instance;
         private void Awake()

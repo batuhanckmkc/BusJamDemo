@@ -5,6 +5,8 @@ namespace BusJamDemo.Utility
         OnCellItemPlaced,
         OnCellItemRemoved,
         OnBusArrivedToStop,
-        OnBusFull
+        OnBusFull,
+        OnPassengerMove,
+        LevelLoaded
     }
 }

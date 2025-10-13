@@ -39,7 +39,8 @@ namespace BusJamDemo.Grid
             
             if (passenger != null)
             {
-                // TODO: Passenger Set.Color(content.Color)
+                passenger.SetColor();
+                PassengerController.Instance.RegisterPassenger(passenger);
             }
             return passenger;
         }

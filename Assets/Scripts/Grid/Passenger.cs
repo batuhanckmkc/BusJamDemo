@@ -13,14 +13,25 @@ namespace BusJamDemo.Grid
     {
         public enum PassengerState { GridState, BoardingState, BusState }
         [SerializeField] private SkinnedMeshRenderer skinnedMeshRenderer;
+        [SerializeField] private Outline outline;
         public bool CanClick { get; set; } = true;
         public PassengerContent PassengerContent;
         private PassengerState _passengerState = PassengerState.GridState;
         public override void Initialize(CellData cellData, CellContent cellContent)
         {
             PassengerContent = cellContent as PassengerContent;
-            skinnedMeshRenderer.material.color = PassengerContent.ColorType.GetColor();
             base.Initialize(cellData, cellContent);
+        }
+
+        public void SetColor()
+        {
+            skinnedMeshRenderer.material.color = PassengerContent.ColorType.GetColor();
+            outline.OutlineColor =  PassengerContent.ColorType.GetColor();
+        }
+        
+        public void CheckOutlineVisibility()
+        {
+            outline.enabled = Pathfinder.Instance.HasAnyPath(CellData.CellPosition);
         }
 
         private void OnEnable()
@@ -48,9 +59,10 @@ namespace BusJamDemo.Grid
             var path = Pathfinder.Instance.GetClosestPathToExit(CellData.CellPosition);
             if (path != null && path.Count > 0)
             {
-                EventManager<ItemRemoveData>.Execute(GameplayEvents.OnCellItemRemoved, new ItemRemoveData(CellData));
                 CanClick = false;
                 MoveAlongPath(path); 
+                EventManager<ItemRemoveData>.Execute(GameplayEvents.OnCellItemRemoved, new ItemRemoveData(CellData));
+                EventManager.Execute(GameplayEvents.OnPassengerMove);
             }
             else
             {
@@ -93,6 +105,7 @@ namespace BusJamDemo.Grid
         private void MoveBus()
         {
             BusController.Instance.CurrentBus.GetOn(this);
+            PassengerController.Instance.DeregisterPassenger(this);
             EventManager<ItemRemoveData>.Execute(GameplayEvents.OnCellItemRemoved, new ItemRemoveData(CellData));
             transform.DOMove(BusController.Instance.CurrentBus.transform.position, 2f).OnComplete(() =>
             {

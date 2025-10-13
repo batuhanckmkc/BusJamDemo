@@ -4,6 +4,13 @@ using UnityEngine;
 
 namespace BusJamDemo.Utility
 {
+    public class PathfindingResult
+    {
+        public bool PathFound { get; set; }
+        public Vector2Int EndCoordinates { get; set; }
+        public Dictionary<Vector2Int, Vector2Int> Parents { get; set; }
+    }
+
     public class Pathfinder : MonoBehaviour
     {
         [SerializeField] private GridManager grid;
@@ -19,11 +26,15 @@ namespace BusJamDemo.Utility
                 Destroy(gameObject);
             }
         }
-        
-        public List<CellPosition> GetClosestPathToExit(CellPosition startCellPosition)
+
+        private PathfindingResult FindPathCore(CellPosition startCellPosition)
         {
             var startCoordinates = new Vector2Int(startCellPosition.Row, startCellPosition.Column);
-            if (!IsMovePossible(startCoordinates.x, startCoordinates.y)) return null;
+            
+            if (!IsMovePossible(startCoordinates.x, startCoordinates.y)) 
+            {
+                return new PathfindingResult { PathFound = false };
+            }
 
             Queue<Vector2Int> queue = new Queue<Vector2Int>();
             HashSet<Vector2Int> visited = new HashSet<Vector2Int>();
@@ -44,7 +55,12 @@ namespace BusJamDemo.Utility
                 Vector2Int current = queue.Dequeue();
                 if (current.x == lastRow && !IsBlocked(current.x, current.y))
                 {
-                    return ReconstructPath(startCoordinates, current, parents);
+                    return new PathfindingResult 
+                    { 
+                        PathFound = true,
+                        EndCoordinates = current,
+                        Parents = parents
+                    };
                 }
 
                 foreach (var dir in directions)
@@ -66,7 +82,24 @@ namespace BusJamDemo.Utility
                     }
                 }
             }
-            return null; 
+            return new PathfindingResult { PathFound = false }; 
+        }
+
+        public bool HasAnyPath(CellPosition startCellPosition)
+        {
+            return FindPathCore(startCellPosition).PathFound;
+        }
+
+        public List<CellPosition> GetClosestPathToExit(CellPosition startCellPosition)
+        {
+            PathfindingResult result = FindPathCore(startCellPosition);
+            if (!result.PathFound)
+            {
+                return null;
+            }
+            
+            var startCoordinates = new Vector2Int(startCellPosition.Row, startCellPosition.Column);
+            return ReconstructPath(startCoordinates, result.EndCoordinates, result.Parents);
         }
 
         private List<CellPosition> ReconstructPath(Vector2Int start, Vector2Int end, Dictionary<Vector2Int, Vector2Int> parents)
@@ -89,7 +122,6 @@ namespace BusJamDemo.Utility
             path.Reverse();
             return path;
         }
-
 
         private bool IsBlocked(int row, int col)
         {

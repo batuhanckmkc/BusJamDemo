@@ -56,7 +56,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 966435227286834146}
-  - component: {fileID: 5607168592665723121}
+  - component: {fileID: 5919566656069767244}
   m_Layer: 0
   m_Name: Path Finder
   m_TagString: Untagged
@@ -79,7 +79,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 5150010823740406598}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5607168592665723121
+--- !u!114 &5919566656069767244
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -137,7 +137,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   busPrefab: {fileID: 837636465906850450, guid: e58732c8f40f945ecb1624e2f39351bf, type: 3}
-  offSet: 5
+  CurrentBus: {fileID: 0}
+  Buses: []
 --- !u!1 &4146778230580253422
 GameObject:
   m_ObjectHideFlags: 0
@@ -186,6 +187,50 @@ MonoBehaviour:
   RowCount: 5
   ColumnCount: 5
   CellSize: 1.1
+--- !u!1 &4455067566781055061
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9128171140819280803}
+  - component: {fileID: 4094138846828624177}
+  m_Layer: 0
+  m_Name: PassengerManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9128171140819280803
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4455067566781055061}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5150010823740406598}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4094138846828624177
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4455067566781055061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03d64a272cb7408396d89107a0173ce0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6370659898315901544
 GameObject:
   m_ObjectHideFlags: 0
@@ -270,6 +315,7 @@ Transform:
   - {fileID: 8182495774031436812}
   - {fileID: 966435227286834146}
   - {fileID: 2635006755651439585}
+  - {fileID: 9128171140819280803}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7167946861976900241

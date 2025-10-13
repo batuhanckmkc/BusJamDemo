@@ -299,6 +299,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2955403660822315702}
   - component: {fileID: 4250074555462496017}
+  - component: {fileID: 7601418341140460687}
   - component: {fileID: 1236519813193484450}
   m_Layer: 3
   m_Name: Passenger
@@ -337,10 +338,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skinnedMeshRenderer: {fileID: 451760539226203357}
+  outline: {fileID: 7601418341140460687}
   PassengerContent:
     Type: 0
     PassengerType: 0
     ColorType: 0
+--- !u!114 &7601418341140460687
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2177485102492390054}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMode: 1
+  outlineColor: {r: 0.2509804, g: 1, b: 0.2509804, a: 1}
+  outlineWidth: 2
+  precomputeOutline: 1
+  bakeKeys: []
+  bakeValues: []
 --- !u!136 &1236519813193484450
 CapsuleCollider:
   m_ObjectHideFlags: 0
