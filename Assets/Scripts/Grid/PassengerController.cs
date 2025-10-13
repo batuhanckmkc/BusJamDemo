@@ -22,14 +22,14 @@ namespace BusJamDemo.Grid
         {
             GameManager.OnGameStateChanged += StopPassengers;
             EventManager.Subscribe(GameplayEvents.LevelLoaded, RecalculateAllPassengerOutlines);
-            EventManager.Subscribe(GameplayEvents.OnPassengerMove, RecalculateAllPassengerOutlines);
+            EventManager<Passenger>.Subscribe(GameplayEvents.OnPassengerMove, OnPassengerMove);
         }
 
         private void OnDisable()
         {
             GameManager.OnGameStateChanged -= StopPassengers;
             EventManager.Unsubscribe(GameplayEvents.LevelLoaded, RecalculateAllPassengerOutlines);
-            EventManager.Unsubscribe(GameplayEvents.OnPassengerMove, RecalculateAllPassengerOutlines);
+            EventManager<Passenger>.Unsubscribe(GameplayEvents.OnPassengerMove, OnPassengerMove);
         }
 
         public void RegisterPassenger(Passenger passenger)
@@ -40,11 +40,17 @@ namespace BusJamDemo.Grid
             }
         }
 
-        public void DeregisterPassenger(Passenger passenger)
+        private void DeregisterPassenger(Passenger passenger)
         {
             _activePassengers.Remove(passenger);
         }
 
+        private void OnPassengerMove(Passenger passenger)
+        {
+            DeregisterPassenger(passenger);
+            RecalculateAllPassengerOutlines();
+        }
+        
         private void RecalculateAllPassengerOutlines()
         {
             foreach (var passenger in _activePassengers)

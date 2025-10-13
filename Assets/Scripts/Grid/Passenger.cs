@@ -83,7 +83,7 @@ namespace BusJamDemo.Grid
                 CanClick = false;
                 MoveAlongPath(path); 
                 EventManager<ItemRemoveData>.Execute(GameplayEvents.OnCellItemRemoved, new ItemRemoveData(CellData));
-                EventManager.Execute(GameplayEvents.OnPassengerMove);
+                EventManager<Passenger>.Execute(GameplayEvents.OnPassengerMove, this);
             }
             else
             {
@@ -128,7 +128,6 @@ namespace BusJamDemo.Grid
         {
             SetAnimation(PassengerAnimationState.Run);
             BusController.Instance.CurrentBus.GetOn(this);
-            PassengerController.Instance.DeregisterPassenger(this);
             EventManager<ItemRemoveData>.Execute(GameplayEvents.OnCellItemRemoved, new ItemRemoveData(CellData));
             transform.DOMove(BusController.Instance.StopPosition, 2f).OnComplete(() =>
             {
