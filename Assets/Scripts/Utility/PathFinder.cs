@@ -31,6 +31,16 @@ namespace BusJamDemo.Utility
         private PathfindingResult FindPathCore(CellPosition startCellPosition)
         {
             var startCoordinates = new Vector2Int(startCellPosition.Row, startCellPosition.Column);
+            int lastRow = grid.RowCount - 1;
+            if (startCoordinates.x == lastRow)
+            {
+                return new PathfindingResult 
+                { 
+                    PathFound = true,
+                    EndCoordinates = startCoordinates,
+                    Parents = new Dictionary<Vector2Int, Vector2Int>()
+                };
+            }
             
             if (!IsMovePossible(startCoordinates.x, startCoordinates.y)) 
             {
@@ -44,7 +54,6 @@ namespace BusJamDemo.Utility
             queue.Enqueue(startCoordinates);
             visited.Add(startCoordinates);
             
-            int lastRow = grid.RowCount - 1; 
             Vector2Int[] directions =
             {
                 new Vector2Int(0, 1), new Vector2Int(0, -1),

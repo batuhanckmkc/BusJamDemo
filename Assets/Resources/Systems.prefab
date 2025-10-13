@@ -47,6 +47,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   uniqueLevels:
   - {fileID: 11400000, guid: 95b61b8b0a21d4efa981613023d48c16, type: 2}
+  - {fileID: 11400000, guid: eff81e45ceff5448aaa65d06a80cc32f, type: 2}
+  - {fileID: 11400000, guid: 6d440f300bb79499c8cf9e2a0a472e51, type: 2}
+  - {fileID: 11400000, guid: 1e98967fea4004900aa09dedd51ae429, type: 2}
+  - {fileID: 11400000, guid: da02893c48a724b808faf92d1ef853e8, type: 2}
   levelLoader: {fileID: 3193514433804454621}
 --- !u!1 &1542593041664264974
 GameObject:

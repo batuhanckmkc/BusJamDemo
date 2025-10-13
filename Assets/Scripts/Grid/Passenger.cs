@@ -77,7 +77,7 @@ namespace BusJamDemo.Grid
         public override void Perform()
         {
             var path = Pathfinder.Instance.GetClosestPathToExit(CellData.CellPosition);
-            if (path != null && path.Count > 0)
+            if (path != null)
             {
                 CanClick = false;
                 MoveAlongPath(path); 
