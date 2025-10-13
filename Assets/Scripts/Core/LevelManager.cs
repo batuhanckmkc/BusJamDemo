@@ -16,6 +16,7 @@ namespace BusJamDemo.Core
         public int CurrentLevelNumber => _currentLevelIndex + 1;
         public static LevelManager Instance;
 
+        private const string LevelSaveKey = "LastPlayedLevel";
         private void Awake()
         {
             if (Instance == null)
@@ -51,19 +52,18 @@ namespace BusJamDemo.Core
         {
             if (_currentLevelIndex >= uniqueLevels.Length)
             {
-                GameManager.Instance.UpdateGameState(GameState.GameComplete);
-                return;
+                _currentLevelIndex = 0;
+                PlayerPrefs.SetInt(LevelSaveKey, _currentLevelIndex);
             }
             _currentLevelData = uniqueLevels[_currentLevelIndex];
             levelLoader.LoadLevel(_currentLevelData);
         }
-
+        
         public void AdvanceToNextLevel()
         {
             _currentLevelIndex++;
+            PlayerPrefs.SetInt(LevelSaveKey, _currentLevelIndex);
 
-            PlayerPrefs.SetInt("LastPlayedLevel", _currentLevelIndex);
-            PlayerPrefs.Save();
             if (_currentLevelIndex < uniqueLevels.Length)
             {
                 GameManager.Instance.UpdateGameState(GameState.Gameplay);
