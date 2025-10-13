@@ -130,7 +130,7 @@ namespace BusJamDemo.Grid
             BusController.Instance.CurrentBus.GetOn(this);
             PassengerController.Instance.DeregisterPassenger(this);
             EventManager<ItemRemoveData>.Execute(GameplayEvents.OnCellItemRemoved, new ItemRemoveData(CellData));
-            transform.DOMove(BusController.Instance.CurrentBus.transform.position, 2f).OnComplete(() =>
+            transform.DOMove(BusController.Instance.StopPosition, 2f).OnComplete(() =>
             {
                 transform.SetParent(BusController.Instance.CurrentBus.transform);
                 BusController.Instance.CurrentBus.CheckBusState();

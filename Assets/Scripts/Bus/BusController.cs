@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using BusJamDemo.Core;
 using BusJamDemo.Grid;
-using BusJamDemo.LevelLoad;
 using BusJamDemo.Utility;
 using DG.Tweening;
 using UnityEngine;
@@ -14,6 +13,9 @@ namespace BusJamDemo.Bus
         [HideInInspector] public Bus CurrentBus;
         public List<Bus> Buses = new();
         public static BusController Instance;
+        private Vector3 _stopPosition;
+        public Vector3 StopPosition => _stopPosition;
+
         private void Awake()
         {
             if (Instance == null)
@@ -76,7 +78,7 @@ namespace BusJamDemo.Bus
             }
             MoveBusesToStop();
         }
-        
+
         private void MoveBusesToStop()
         {
             float spacing = LevelManager.Instance.CurrentLevelData.BusSpacingX;
@@ -93,6 +95,10 @@ namespace BusJamDemo.Bus
 
                 float targetX = -i * totalItemWidth;
                 Vector3 targetPos = new Vector3(targetX, 0, targetZ);
+                if (i == 0)
+                {
+                    _stopPosition = targetPos;
+                }
                 movementSequence.Join(bus.transform.DOMove(targetPos, duration).SetEase(Ease.OutCubic));
             }
             movementSequence.OnComplete(() =>
