@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using BusJamDemo.Bus;
+using BusJamDemo.Core;
 using BusJamDemo.Core.Input;
 using BusJamDemo.LevelLoad;
 using BusJamDemo.Utility;
@@ -142,12 +143,20 @@ namespace BusJamDemo.Grid
         private void MoveBoardingCell()
         {
             var targetBoardingCell = GridManager.Instance.GetEligibleBoardingCell();
+            if (targetBoardingCell == null)
+            {
+                return;
+            }
             targetBoardingCell.FillItem(this);
             UpdateCellData(targetBoardingCell);
             SetState(PassengerGameState.BoardingState);
             transform.DOMove(targetBoardingCell.CellPosition.WorldPosition, 1f).OnComplete(() =>
             {
                 SetAnimation(PassengerAnimationState.Idle);
+                if (GridManager.Instance.AllBoardingCellsIsBusy())
+                {
+                    GameManager.Instance.UpdateGameState(GameState.LevelFail);
+                }
             });
         }
 

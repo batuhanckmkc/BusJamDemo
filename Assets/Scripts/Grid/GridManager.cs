@@ -86,6 +86,11 @@ namespace BusJamDemo.Grid
             }
         }
 
+        public bool AllBoardingCellsIsBusy()
+        {
+            return _boardingCells.All(cellData => cellData.HasItem);
+        }
+        
         public CellData GetEligibleBoardingCell()
         {
             return _boardingCells.FirstOrDefault(cellData => !cellData.HasItem);
