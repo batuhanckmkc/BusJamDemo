@@ -27,21 +27,22 @@ namespace BusJamDemo.UI
 
         private void OnGameStateChanged(GameState newState)
         {
-            if (newState == GameState.LevelFail)
+            switch (newState)
             {
-                resultText.text = "Level Fail!";
-                restartButton.gameObject.SetActive(true);
-                nextLevelButton.gameObject.SetActive(false);
-                gameObject.SetActive(true);
-                TimerManager.Instance.StopTimer();
-            }
-            else if (newState == GameState.GameComplete)
-            {
-                resultText.text = "Congratulations! Game Completed!";
-                restartButton.gameObject.SetActive(false);
-                nextLevelButton.gameObject.SetActive(false);
-                gameObject.SetActive(true);
-                TimerManager.Instance.StopTimer();
+                case GameState.LevelFail:
+                    resultText.text = "Level Fail!";
+                    restartButton.gameObject.SetActive(true);
+                    nextLevelButton.gameObject.SetActive(false);
+                    Show();
+                    TimerManager.Instance.StopTimer();
+                    break;
+                case GameState.LevelComplete:
+                    resultText.text = "Level Success!";
+                    restartButton.gameObject.SetActive(false);
+                    nextLevelButton.gameObject.SetActive(true);
+                    Show();
+                    TimerManager.Instance.StopTimer();
+                    break;
             }
         }
 

@@ -68,10 +68,6 @@ namespace BusJamDemo.Core
             {
                 GameManager.Instance.UpdateGameState(GameState.Gameplay);
             }
-            else
-            {
-                GameManager.Instance.UpdateGameState(GameState.GameComplete);
-            }
         }
     }
 }

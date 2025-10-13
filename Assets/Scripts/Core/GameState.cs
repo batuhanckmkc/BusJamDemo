@@ -6,7 +6,6 @@ namespace BusJamDemo.Core
         Loading,
         Gameplay,
         LevelComplete,
-        LevelFail,
-        GameComplete
+        LevelFail
     }
 }
