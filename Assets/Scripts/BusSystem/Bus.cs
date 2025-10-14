@@ -11,10 +11,13 @@ namespace BusJamDemo.BusSystem
 {
     public class Bus : MonoBehaviour, IPoolable
     {
+        public Vector3 TargetSeat => _seatTransforms[_passengers.Count - 1];
+
         [SerializeField] private Transform busTransform;
         [SerializeField] private MeshRenderer meshRenderer;
         private readonly List<Passenger> _passengers = new ();
         private bool HasEmptySeat => _passengers.Count < _busContent.RequiredPassengerSequence.Count;
+        private float _seatSpacing;
         public Transform BusTransform => busTransform;
         private BusContent _busContent;
         private IGameService _gameService;
@@ -25,8 +28,29 @@ namespace BusJamDemo.BusSystem
             _gameService = gameService;
             _poolService = poolService;
             meshRenderer.material.color = _busContent.ColorType.GetColor();
+            CalculateTargetSeatPosition();
         }
 
+        private List<Vector3> _seatTransforms = new();
+        private void CalculateTargetSeatPosition()
+        {
+            var busScaleX = busTransform.localScale.x;
+            var passengerCount = _busContent.RequiredPassengerSequence.Count;
+    
+            _seatTransforms.Clear();
+            if (passengerCount == 0) return;
+
+            var slotWidth = busScaleX / passengerCount; 
+            var leftmostX = -(busScaleX / 2f); 
+            var initialOffset = leftmostX + (slotWidth / 2f); 
+            for (int i = 0; i < passengerCount; i++)
+            {
+                float seatX = initialOffset + (i * slotWidth);
+        
+                _seatTransforms.Add(new Vector3(seatX, 0, 0)); 
+            }
+        }
+        
         public bool CanGetOn(Passenger passenger)
         {
             return HasEmptySeat && passenger.CellContent is PassengerContent passengerContent && _busContent.ColorType == passengerContent.ColorType;

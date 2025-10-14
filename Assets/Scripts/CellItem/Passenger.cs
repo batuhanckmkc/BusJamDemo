@@ -154,6 +154,7 @@ namespace BusJamDemo.Grid
             transform.DOMove(_busService.StopPosition, 2f).OnComplete(() =>
             {
                 transform.SetParent(_busService.CurrentBus.transform);
+                transform.localPosition = _busService.CurrentBus.TargetSeat; 
                 _busService.CurrentBus.CheckBusState();
                 SetState(PassengerGameState.BusState);
                 UpdateCellData(null);
