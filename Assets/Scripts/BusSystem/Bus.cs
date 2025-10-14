@@ -5,7 +5,7 @@ using BusJamDemo.Utility;
 using DG.Tweening;
 using UnityEngine;
 
-namespace BusJamDemo.Bus
+namespace BusJamDemo.BusSystem
 {
     public class Bus : MonoBehaviour
     {
@@ -39,7 +39,7 @@ namespace BusJamDemo.Bus
                 EventManager<Bus>.Execute(GameplayEvents.OnBusFull, this);
                 transform.DOMove(new Vector3(15, transform.position.y, transform.position.z), 2f).OnComplete(() =>
                 {
-                    Destroy(gameObject);
+                    gameObject.SetActive(false);
                 });
             }
         }

@@ -1,4 +1,5 @@
 using BusJamDemo.Core;
+using BusJamDemo.Service;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
@@ -11,18 +12,26 @@ namespace BusJamDemo.UI
         [SerializeField] private Button restartButton;
         [SerializeField] private Button nextLevelButton;
     
+        private IGameService _gameService;
+        private ILevelService _levelService;
+        
+        public void Initialize(IGameService gameService, ILevelService levelService)
+        {
+            _gameService = gameService;
+            _levelService = levelService;
+            _gameService.OnGameStateChanged += OnGameStateChanged;
+        }
+        
         private void OnEnable()
         {
             restartButton.onClick.AddListener(OnRestartButtonClicked);
             nextLevelButton.onClick.AddListener(OnNextLevelButtonClicked);
-            GameManager.OnGameStateChanged += OnGameStateChanged;
         }
 
         private void OnDisable()
         {
             restartButton.onClick.RemoveListener(OnRestartButtonClicked);
             nextLevelButton.onClick.RemoveListener(OnNextLevelButtonClicked);
-            GameManager.OnGameStateChanged -= OnGameStateChanged;
         }
 
         private void OnGameStateChanged(GameState newState)
@@ -34,29 +43,25 @@ namespace BusJamDemo.UI
                     restartButton.gameObject.SetActive(true);
                     nextLevelButton.gameObject.SetActive(false);
                     Show();
-                    TimerManager.Instance.StopTimer();
                     break;
                 case GameState.LevelComplete:
                     resultText.text = "Level Success!";
                     restartButton.gameObject.SetActive(false);
                     nextLevelButton.gameObject.SetActive(true);
                     Show();
-                    TimerManager.Instance.StopTimer();
                     break;
             }
         }
 
         private void OnRestartButtonClicked()
         {
-            GameManager.Instance.UpdateGameState(GameState.StartScreen);
-            Hide();
+            _gameService.UpdateGameState(GameState.StartScreen);
         }
 
         private void OnNextLevelButtonClicked()
         {
-            LevelManager.Instance.AdvanceToNextLevel();
-            GameManager.Instance.UpdateGameState(GameState.StartScreen);
-            Hide();
+            _levelService.AdvanceToNextLevel();
+            _gameService.UpdateGameState(GameState.StartScreen);
         }
     }
 }

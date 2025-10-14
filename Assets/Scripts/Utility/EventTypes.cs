@@ -7,6 +7,7 @@ namespace BusJamDemo.Utility
         OnBusArrivedToStop,
         OnBusFull,
         OnPassengerMove,
-        LevelLoaded
+        LevelLoaded,
+        SystemInitialized
     }
 }

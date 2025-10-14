@@ -1,8 +1,9 @@
 using System.Collections.Generic;
-using BusJamDemo.Bus;
+using BusJamDemo.BusSystem;
 using BusJamDemo.Core;
 using BusJamDemo.Core.Input;
 using BusJamDemo.LevelLoad;
+using BusJamDemo.Service;
 using BusJamDemo.Utility;
 using DG.Tweening;
 using UnityEngine;
@@ -26,9 +27,24 @@ namespace BusJamDemo.Grid
         public bool CanClick { get; set; } = true;
         public PassengerContent PassengerContent;
         private PassengerGameState _passengerGameState = PassengerGameState.GridState;
+
+        private IPathfindingService _pathfinder;
+        private IGridService _gridService;
+        private IBusService _busService;
+        private IGameService _gameService;
+        
+        public void InitializeServices(IPathfindingService pathfinder, IGridService gridService, IBusService busService, IGameService gameService)
+        {
+            _pathfinder = pathfinder;
+            _gridService = gridService;
+            _busService = busService;
+            _gameService = gameService;
+        }
+        
         public override void Initialize(CellData cellData, CellContent cellContent)
         {
             PassengerContent = cellContent as PassengerContent;
+            EventManager.Subscribe(GameplayEvents.OnBusArrivedToStop, CheckPassengerAvailability);
             base.Initialize(cellData, cellContent);
         }
         
@@ -52,19 +68,9 @@ namespace BusJamDemo.Grid
         
         public void CheckOutlineVisibility()
         {
-            outline.enabled = Pathfinder.Instance.HasAnyPath(CellData.CellPosition);
+            outline.enabled = _pathfinder.HasAnyPath(CellData.CellPosition);
         }
-
-        private void OnEnable()
-        {
-            EventManager.Subscribe(GameplayEvents.OnBusArrivedToStop, CheckPassengerAvailability);
-        }
-
-        private void OnDisable()
-        {
-            EventManager.Unsubscribe(GameplayEvents.OnBusArrivedToStop, CheckPassengerAvailability);
-        }
-
+        
         private void UpdateCellData(CellData cellData)
         {
             CellData = cellData;
@@ -72,28 +78,24 @@ namespace BusJamDemo.Grid
         
         public void HandleClick()
         {
-            Perform();
-        }
-        
-        public override void Perform()
-        {
-            var path = Pathfinder.Instance.GetClosestPathToExit(CellData.CellPosition);
-            if (path != null)
+            if (_passengerGameState != PassengerGameState.GridState) return;
+            
+            var path = _pathfinder.FindPath(CellData.CellPosition);
+            if (path == null)
             {
-                CanClick = false;
-                MoveAlongPath(path); 
-                EventManager<ItemRemoveData>.Execute(GameplayEvents.OnCellItemRemoved, new ItemRemoveData(CellData));
-                EventManager<Passenger>.Execute(GameplayEvents.OnPassengerMove, this);
+                SetAnimation(PassengerAnimationState.Idle);
+                return;
             }
-            else
-            {
-                Debug.Log("No path was found or all exits were occupied.");
-            }
+            
+            CanClick = false;
+            SetAnimation(PassengerAnimationState.Run);
+            EventManager<ItemRemoveData>.Execute(GameplayEvents.OnCellItemRemoved, new ItemRemoveData(CellData));
+            EventManager<Passenger>.Execute(GameplayEvents.OnPassengerMove, this);
+            MoveAlongPath(path);
         }
         
         private void MoveAlongPath(List<CellPosition> path)
         {
-            SetAnimation(PassengerAnimationState.Run);
             var followPathSequence = DOTween.Sequence();
             for (int i = 0; i < path.Count; i++)
             {
@@ -110,19 +112,19 @@ namespace BusJamDemo.Grid
         
         private void CheckPassengerAvailability()
         {
-            if (_passengerGameState != PassengerGameState.BoardingState || !BusController.Instance.CurrentBus.CanGetOn(this))
+            if (_passengerGameState != PassengerGameState.BoardingState || !_busService.CurrentBus.CanGetOn(this))
             {
                 return;
             }
-            MoveBus();
+            MoveToBus();
         }
         
         private void DecidePath()
         {
-            var canGetOn = BusController.Instance.CurrentBus.CanGetOn(this);
+            var canGetOn = _busService.CurrentBus.CanGetOn(this);
             if (canGetOn)
             {
-                MoveBus();
+                MoveToBus();
             }
             else
             {
@@ -130,15 +132,15 @@ namespace BusJamDemo.Grid
             }
         }
 
-        private void MoveBus()
+        private void MoveToBus()
         {
             SetAnimation(PassengerAnimationState.Run);
-            BusController.Instance.CurrentBus.GetOn(this);
+            _busService.CurrentBus.GetOn(this);
             EventManager<ItemRemoveData>.Execute(GameplayEvents.OnCellItemRemoved, new ItemRemoveData(CellData));
-            transform.DOMove(BusController.Instance.StopPosition, 2f).OnComplete(() =>
+            transform.DOMove(_busService.StopPosition, 2f).OnComplete(() =>
             {
-                transform.SetParent(BusController.Instance.CurrentBus.transform);
-                BusController.Instance.CurrentBus.CheckBusState();
+                transform.SetParent(_busService.CurrentBus.transform);
+                _busService.CurrentBus.CheckBusState();
                 SetState(PassengerGameState.BusState);
                 UpdateCellData(null);
                 SetAnimation(PassengerAnimationState.Idle);
@@ -147,7 +149,7 @@ namespace BusJamDemo.Grid
         
         private void MoveBoardingCell()
         {
-            var targetBoardingCell = GridManager.Instance.GetEligibleBoardingCell();
+            var targetBoardingCell = _gridService.GetEligibleBoardingCell();
             if (targetBoardingCell == null)
             {
                 return;
@@ -158,9 +160,9 @@ namespace BusJamDemo.Grid
             transform.DOMove(targetBoardingCell.CellPosition.WorldPosition, 1f).OnComplete(() =>
             {
                 SetAnimation(PassengerAnimationState.Idle);
-                if (GridManager.Instance.AllBoardingCellsIsBusy())
+                if (_gridService.AllBoardingCellsIsBusy())
                 {
-                    GameManager.Instance.UpdateGameState(GameState.LevelFail);
+                    _gameService.UpdateGameState(GameState.LevelFail);
                 }
             });
         }

@@ -135,6 +135,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: UIManager [Canvas]
       objectReference: {fileID: 0}
+    - target: {fileID: 650941045674899729, guid: 182e2cc8581f443fca086a686e1eab09, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3041978503787917875, guid: 182e2cc8581f443fca086a686e1eab09, type: 3}
       propertyPath: restartButton
       value: 

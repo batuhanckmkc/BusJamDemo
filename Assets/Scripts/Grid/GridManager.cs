@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
+using BusJamDemo.Service;
 using BusJamDemo.Utility;
 using UnityEngine;
 
 namespace BusJamDemo.Grid
 {
-    public class GridManager : MonoBehaviour
+    public class GridManager : MonoBehaviour, IGridService
     {
         [SerializeField] private Cell cellPrefab;
         private CellData[,] _mainCells;
@@ -14,23 +15,11 @@ namespace BusJamDemo.Grid
         public CellData this[int row, int column] => _mainCells[row, column];
         private readonly List<Cell> _allCells = new();
         private readonly Dictionary<int, CellData> _allCellsById = new(); 
-        //Z
-        public int RowCount;
-        //X
-        public int ColumnCount;
+        public int RowCount { get; private set; }
+        public int ColumnCount { get; private set; }
+        public Transform Transform => transform;
+
         public float CellSize;
-        public static GridManager Instance;
-        private void Awake()
-        {
-            if (Instance == null)
-            {
-                Instance = this;
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
-        }
 
         private void OnEnable()
         {

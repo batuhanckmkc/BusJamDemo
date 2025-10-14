@@ -1,22 +1,37 @@
 using System.Linq;
 using UnityEngine;
 using BusJamDemo.LevelLoad;
+using BusJamDemo.Service;
 
 namespace BusJamDemo.Grid
 {
-    public class CellItemSpawner : MonoBehaviour
+    public class CellItemSpawner : MonoBehaviour, ICellItemSpawner
     {
-        [SerializeField] private GridManager gridGenerator;
-        [SerializeField] private CellItem[] itemPrefabs; 
+        [SerializeField] private CellItem[] itemPrefabs;
+
+        private IGridService _gridService;
+        private IPassengerService _passengerService;
+        private IPathfindingService _pathfindingService;
+        private IBusService _busService;
+        private IGameService _gameService;
+        public void Initialize(IGridService gridService, IPassengerService passengerService, IPathfindingService pathfindingService, IBusService busService, IGameService gameService)
+        {
+            _gridService = gridService;
+            _passengerService = passengerService;
+            _pathfindingService = pathfindingService;
+            _busService = busService;
+            _gameService = gameService;
+        }
+        
         private CellItem InstantiateAndSetupItem(CellItem prefab, CellContent cellContent, int row, int col, Transform parent)
         {
-            if (row < 0 || row >= gridGenerator.RowCount || col < 0 || col >= gridGenerator.ColumnCount)
+            if (row < 0 || row >= _gridService.RowCount || col < 0 || col >= _gridService.ColumnCount)
             {
                 Debug.LogWarning($"[Spawner] Invalid coordinates: ({row}, {col})");
                 return null;
             }
 
-            var cellData = gridGenerator[row, col];
+            var cellData = _gridService[row, col];
             if (cellData.HasItem)
             {
                 Debug.LogWarning($"[Spawner] Grid cell already occupied: ({row}, {col})");
@@ -39,9 +54,10 @@ namespace BusJamDemo.Grid
             
             if (passenger != null)
             {
+                passenger.InitializeServices(_pathfindingService, _gridService, _busService, _gameService);
                 passenger.SetColor();
                 passenger.SetAnimation(PassengerAnimationState.Idle);
-                PassengerController.Instance.RegisterPassenger(passenger);
+                _passengerService.RegisterPassenger(passenger);
             }
             return passenger;
         }

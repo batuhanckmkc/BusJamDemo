@@ -1,76 +1,42 @@
 using System.Collections.Generic;
 using BusJamDemo.Core;
-using BusJamDemo.Grid;
+using BusJamDemo.LevelLoad;
+using BusJamDemo.Service;
 using BusJamDemo.Utility;
 using DG.Tweening;
 using UnityEngine;
 
-namespace BusJamDemo.Bus
+namespace BusJamDemo.BusSystem
 {
-    public class BusController : MonoBehaviour
+    public class BusController : MonoBehaviour, IBusService
     {
         [SerializeField] private Bus busParentPrefab;
-        [HideInInspector] public Bus CurrentBus;
-        public List<Bus> Buses = new();
-        public static BusController Instance;
+        private readonly List<Bus> _buses = new();
         private Vector3 _stopPosition;
+        public Bus CurrentBus { get; private set; }
         public Vector3 StopPosition => _stopPosition;
 
-        private void Awake()
+        private IGameService _gameService;
+        private ILevelService _levelService;
+        private IGridService _gridService;
+        public void Initialize(IGameService gameService, ILevelService levelService, IGridService gridService)
         {
-            if (Instance == null)
-            {
-                Instance = this;
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
-        }
-        
-        private void OnEnable()
-        {
+            _gameService = gameService;
+            _levelService = levelService;
+            _gridService = gridService;
+            
             EventManager<Bus>.Subscribe(GameplayEvents.OnBusFull, OnBusFull);
         }
 
-        private void OnDisable()
+        public void CreateBuses(List<BusContent> busContents)
         {
-            EventManager<Bus>.Unsubscribe(GameplayEvents.OnBusFull, OnBusFull);
-        }
-
-        public void ClearBuses()
-        {
-            foreach (var bus in Buses)
-            {
-                Destroy(bus.gameObject);
-            }
-            Buses.Clear();
-        }
-        
-        private void OnBusFull(Bus bus)
-        {
-            Buses.Remove(bus);
-            if (Buses.Count > 0)
-            {
-                CurrentBus = Buses[0];
-                MoveBusesToStop(); 
-            }
-            else
-            {
-                GameManager.Instance.UpdateGameState(GameState.LevelComplete);
-            }
-        }
-        
-        public void CreateBuses()
-        {
-            var levelData = LevelManager.Instance.CurrentLevelData;
-            var busContents = levelData.BusContents;
+            var levelData = _levelService.CurrentLevelData;
             int busCount = busContents.Count;
 
             float busWidth = busParentPrefab.BusTransform.localScale.x;
             float totalItemWidth = busWidth + levelData.BusSpacingX;
 
-            float stopZPosition = GridManager.Instance.BoardingCells[^1].CellPosition.WorldPosition.z;
+            float stopZPosition = _gridService.BoardingCells[^1].CellPosition.WorldPosition.z;
             float spawnZ = stopZPosition + levelData.BusSpawnDistance.z;
             float spawnXAnchor = -levelData.BusSpawnDistance.x;
             float totalSpanX = (busCount - 1) * totalItemWidth;
@@ -83,7 +49,7 @@ namespace BusJamDemo.Bus
                 var bus = Instantiate(busParentPrefab, new Vector3(spawnX, 0, spawnZ), Quaternion.identity, transform);
 
                 bus.Initialize(busContents[i]);
-                Buses.Add(bus);
+                _buses.Add(bus);
 
                 if (i == 0)
                 {
@@ -93,19 +59,43 @@ namespace BusJamDemo.Bus
             MoveBusesToStop();
         }
 
+        public void ClearBuses()
+        {
+            foreach (var bus in _buses)
+            {
+                Destroy(bus.gameObject);
+            }
+            _buses.Clear();
+        }
+        
+        private void OnBusFull(Bus bus)
+        {
+            _buses.Remove(bus);
+            if (_buses.Count > 0)
+            {
+                CurrentBus = _buses[0];
+                MoveBusesToStop(); 
+            }
+            else
+            {
+                _gameService.UpdateGameState(GameState.LevelComplete);
+            }
+        }
+
         private void MoveBusesToStop()
         {
-            float spacing = LevelManager.Instance.CurrentLevelData.BusSpacingX;
+            var levelData = _levelService.CurrentLevelData;
+            float spacing = levelData.BusSpacingX;
             float duration = 1f;
             float busWidth = busParentPrefab.BusTransform.localScale.x;
 
-            float targetZ = GridManager.Instance.BoardingCells[^1].CellPosition.WorldPosition.z + LevelManager.Instance.CurrentLevelData.BusSpawnDistance.z;
+            float targetZ = _gridService.BoardingCells[^1].CellPosition.WorldPosition.z + levelData.BusSpawnDistance.z;
             float totalItemWidth = busWidth + spacing;
 
             var movementSequence = DOTween.Sequence();
-            for (int i = 0; i < Buses.Count; i++)
+            for (int i = 0; i < _buses.Count; i++)
             {
-                Bus bus = Buses[i];
+                Bus bus = _buses[i];
 
                 float targetX = -i * totalItemWidth;
                 Vector3 targetPos = new Vector3(targetX, 0, targetZ);

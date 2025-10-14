@@ -6,7 +6,7 @@ namespace BusJamDemo.UI
     {
         [SerializeField] protected GameObject Root;
 
-        public void Show()
+        public virtual void Show()
         {
             Root.gameObject.SetActive(true);
         }

@@ -1,36 +1,24 @@
 using System.Collections.Generic;
 using BusJamDemo.Core;
+using BusJamDemo.Service;
 using BusJamDemo.Utility;
 using UnityEngine;
 
 namespace BusJamDemo.Grid
 {
-    public class PassengerController : MonoBehaviour
+    public class PassengerController : MonoBehaviour, IPassengerService
     {
-        public static PassengerController Instance { get; private set; }
         private List<Passenger> _allPassengers = new();
         private readonly List<Passenger> _activePassengers = new();
 
-        private void Awake()
+        private IGameService _gameService;
+        public void Initialize(IGameService gameService)
         {
-            if (Instance == null)
-                Instance = this;
-            else
-                Destroy(gameObject);
-        }
-    
-        private void OnEnable()
-        {
-            GameManager.OnGameStateChanged += StopPassengers;
+            _gameService = gameService;
+            
+            _gameService.OnGameStateChanged += StopPassengers;
             EventManager.Subscribe(GameplayEvents.LevelLoaded, RecalculateAllPassengerOutlines);
             EventManager<Passenger>.Subscribe(GameplayEvents.OnPassengerMove, OnPassengerMove);
-        }
-
-        private void OnDisable()
-        {
-            GameManager.OnGameStateChanged -= StopPassengers;
-            EventManager.Unsubscribe(GameplayEvents.LevelLoaded, RecalculateAllPassengerOutlines);
-            EventManager<Passenger>.Unsubscribe(GameplayEvents.OnPassengerMove, OnPassengerMove);
         }
 
         public void RegisterPassenger(Passenger passenger)

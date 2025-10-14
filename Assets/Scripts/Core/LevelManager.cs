@@ -1,49 +1,40 @@
 using BusJamDemo.LevelLoad;
+using BusJamDemo.Service;
 using UnityEngine;
 
 
 namespace BusJamDemo.Core
 {
-    public class LevelManager : MonoBehaviour
+    public class LevelManager : MonoBehaviour, ILevelService
     {
         [SerializeField] private LevelData_SO[] uniqueLevels;
-        [SerializeField] private LevelLoader levelLoader;
 
+        private IGameService _gameService;
+        private ILevelLoader _loader;
+        
+        
         private LevelData_SO _currentLevelData;
-        public LevelData_SO CurrentLevelData => _currentLevelData;
         private int _currentLevelIndex;
+        public LevelData_SO CurrentLevelData => _currentLevelData;
         public int CurrentLevelNumber => _currentLevelIndex + 1;
-        public static LevelManager Instance;
-
         private const string LevelSaveKey = "LastPlayedLevel";
-        private void Awake()
+
+
+        public void Initialize(IGameService gameService, ILevelLoader loader)
         {
-            if (Instance == null)
-            {
-                Instance = this;
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
+            _gameService = gameService;
+            _loader = loader;
+            
+            _gameService.OnGameStateChanged += OnGameStateChange;
+
         }
 
-        private void Start()
+        public void ActivateSystem()
         {
             InitializeLevelIndex();
-            LoadCurrentLevel();
+            // LoadCurrentLevel();
         }
-
-        private void OnEnable()
-        {
-            GameManager.OnGameStateChanged += OnGameStateChange;
-        }
-
-        private void OnDisable()
-        {
-            GameManager.OnGameStateChanged -= OnGameStateChange;
-        }
-
+        
         private void OnGameStateChange(GameState gameState)
         {
             if (gameState == GameState.StartScreen)
@@ -65,7 +56,7 @@ namespace BusJamDemo.Core
                 PlayerPrefs.SetInt(LevelSaveKey, _currentLevelIndex);
             }
             _currentLevelData = uniqueLevels[_currentLevelIndex];
-            levelLoader.LoadLevel(_currentLevelData);
+            _loader.LoadLevel(_currentLevelData);
         }
         
         public void AdvanceToNextLevel()

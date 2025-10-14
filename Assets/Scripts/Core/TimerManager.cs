@@ -1,25 +1,22 @@
 using System;
+using BusJamDemo.Service;
 using UnityEngine;
 
 namespace BusJamDemo.Core
 {
-    public class TimerManager : MonoBehaviour
+    public class TimerManager : MonoBehaviour, ITimerService
     {
-        public static TimerManager Instance { get; private set; }
+        private IGameService _gameService;
+        private ILevelService _levelService;
         private float _currentTime;
         private bool _isTimerRunning;
-
         public float CurrentTime => _currentTime;
-        private void Awake()
+        public Action<float> OnTimerUpdate { get; set; }
+        public void Initialize(IGameService gameService, ILevelService levelService)
         {
-            if (Instance == null)
-            {
-                Instance = this;
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
+            _gameService = gameService;
+            _levelService = levelService;
+            _gameService.OnGameStateChanged += OnGameStateChanged;
         }
 
         private void Update()
@@ -27,10 +24,24 @@ namespace BusJamDemo.Core
             if (!_isTimerRunning) return;
 
             _currentTime -= Time.deltaTime;
+            OnTimerUpdate?.Invoke(_currentTime);
             if (_currentTime <= 0)
             {
                 _isTimerRunning = false;
-                GameManager.Instance.UpdateGameState(GameState.LevelFail);
+                _gameService.UpdateGameState(GameState.LevelFail);
+            }
+        }
+
+        private void OnGameStateChanged(GameState newState)
+        {
+            switch (newState)
+            {
+                case GameState.Gameplay:
+                    StartTimer(_levelService.CurrentLevelData.Time);
+                    break;
+                case GameState.LevelFail:
+                    StopTimer();
+                    break;
             }
         }
 

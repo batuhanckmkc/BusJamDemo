@@ -7,7 +7,7 @@ namespace BusJamDemo.Grid
     {
         public CellData CellData;
         public CellContent CellContent;
-        public abstract void Perform();
+        public virtual void Perform(){}
         public virtual void Initialize(CellData cellData, CellContent cellContent)
         {
             CellData = cellData;

@@ -1,14 +1,22 @@
-using BusJamDemo.Bus;
 using UnityEngine;
-using BusJamDemo.Grid;
+using BusJamDemo.Service;
 using BusJamDemo.Utility;
 
 namespace BusJamDemo.LevelLoad
 {
-    public class LevelLoader : MonoBehaviour
+    public class LevelLoader : MonoBehaviour, ILevelLoader
     {
-        [Header("Required References")]
-        [SerializeField] private CellItemSpawner itemSpawner;
+        private IGridService _gridService;
+        private IBusService _busService;
+        private IPassengerService _passengerService;
+        private ICellItemSpawner _cellItemSpawner;
+        public void Initialize(IGridService gridService, IBusService busService, IPassengerService passengerService, ICellItemSpawner cellItemSpawner)
+        {
+            _gridService = gridService;
+            _busService = busService;
+            _passengerService = passengerService;
+            _cellItemSpawner = cellItemSpawner;
+        }
         
         public void LoadLevel(LevelData_SO levelData)
         {
@@ -26,9 +34,9 @@ namespace BusJamDemo.LevelLoad
                 return;
             }
 
-            GridManager.Instance.GenerateMainCells(levelData.Rows, levelData.Columns, levelData.CellSize);
-            GridManager.Instance.GenerateBoardingCells(levelData.BoardingCellContent.DefaultBoardingCellCount);
-            BusController.Instance.CreateBuses();
+            _gridService.GenerateMainCells(levelData.Rows, levelData.Columns, levelData.CellSize);
+            _gridService.GenerateBoardingCells(levelData.BoardingCellContent.DefaultBoardingCellCount);
+            _busService.CreateBuses(levelData.BusContents);
             
             int requiredLength = levelData.Rows * levelData.Columns;
 
@@ -53,11 +61,11 @@ namespace BusJamDemo.LevelLoad
             EventManager.Execute(GameplayEvents.LevelLoaded);
         }
         
-        private void ClearPreviousLevel()
+        public void ClearPreviousLevel()
         {
-            GridManager.Instance.ClearGrid(); 
-            BusController.Instance.ClearBuses();
-            PassengerController.Instance.ClearPassengers();
+            _gridService.ClearGrid(); 
+            _busService.ClearBuses();
+            _passengerService.ClearPassengers();
         }
 
         private void SpawnCellItem(CellContent content, int row, int col)
@@ -66,11 +74,11 @@ namespace BusJamDemo.LevelLoad
             {
                 case CellContentType.Passenger:
                     var pContent = (PassengerContent)content;
-                    itemSpawner.SpawnPassenger(pContent, row, col, GridManager.Instance.transform);
+                    _cellItemSpawner.SpawnPassenger(pContent, row, col, _gridService.Transform);
                     break;
                 case CellContentType.Tunnel:
                     var tContent = (TunnelContent)content;
-                    itemSpawner.SpawnTunnel(tContent, row, col, GridManager.Instance.transform);
+                    _cellItemSpawner.SpawnTunnel(tContent, row, col, _gridService.Transform);
                     break;
                 case CellContentType.Empty:
                 default:

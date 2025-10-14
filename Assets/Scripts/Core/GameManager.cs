@@ -1,53 +1,27 @@
 using System;
-using BusJamDemo.UI;
+using BusJamDemo.Service;
+using BusJamDemo.Utility;
 using UnityEngine;
 
 namespace BusJamDemo.Core
 {
-    public class GameManager : MonoBehaviour
+    public class GameManager : MonoBehaviour, IGameService
     {
-        public static GameManager Instance { get; private set; }
-        private GameState _currentState;
+        public GameState CurrentState { get; private set; } = GameState.None;
+        public event Action<GameState> OnGameStateChanged;
 
-        public static Action<GameState> OnGameStateChanged;
-        private void Awake()
+        public void Initialize()
         {
-            if (Instance == null)
-                Instance = this;
-            else
-                Destroy(gameObject);
+            EventManager.Subscribe(GameplayEvents.SystemInitialized, StartGame);
         }
-
-        private void Start()
-        {
-            UpdateGameState(GameState.StartScreen);
-        }
-
+        private void StartGame() => UpdateGameState(GameState.StartScreen);
+        
         public void UpdateGameState(GameState newState)
         {
-            if (_currentState == newState) return;
+            if (CurrentState == newState) return;
 
-            _currentState = newState;
+            CurrentState = newState;
             OnGameStateChanged?.Invoke(newState);
-            switch (newState)
-            {
-                case GameState.StartScreen:
-                    UIManager.Instance.StartScreenUI.Show();
-                    UIManager.Instance.GameplayScreenUI.Hide();
-                    break;
-                case GameState.Gameplay:
-                    TimerManager.Instance.StartTimer(LevelManager.Instance.CurrentLevelData.Time);
-                    UIManager.Instance.GameplayScreenUI.Show();
-                    UIManager.Instance.GameplayScreenUI.UpdateLevelDisplay(LevelManager.Instance.CurrentLevelNumber);
-                    break;
-                case GameState.LevelComplete:
-                    UIManager.Instance.EndGameScreenUI.Show();
-                    break;
-                case GameState.LevelFail:
-                    TimerManager.Instance.StopTimer();
-                    UIManager.Instance.EndGameScreenUI.Show();
-                    break;
-            }
         }
     }
 }

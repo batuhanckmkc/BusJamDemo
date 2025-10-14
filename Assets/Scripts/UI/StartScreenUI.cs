@@ -1,4 +1,5 @@
 using BusJamDemo.Core;
+using BusJamDemo.Service;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,6 +9,12 @@ namespace BusJamDemo.UI
     {
         [SerializeField] private Button startButton;
 
+        private IGameService _gameService;
+        public void Initialize(IGameService gameService)
+        {
+            _gameService = gameService;
+        }
+        
         private void OnEnable()
         {
             startButton.onClick.AddListener(HandleTapToStart);
@@ -20,7 +27,7 @@ namespace BusJamDemo.UI
 
         private void HandleTapToStart()
         {
-            GameManager.Instance.UpdateGameState(GameState.Gameplay);
+            _gameService.UpdateGameState(GameState.Gameplay);
             Hide();
         }
     }

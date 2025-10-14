@@ -1,6 +1,7 @@
 using BusJamDemo.Grid;
 using System.Collections.Generic;
 using BusJamDemo.Core.Input;
+using BusJamDemo.Service;
 using UnityEngine;
 
 namespace BusJamDemo.Utility
@@ -12,26 +13,18 @@ namespace BusJamDemo.Utility
         public Dictionary<Vector2Int, Vector2Int> Parents { get; set; }
     }
 
-    public class Pathfinder : MonoBehaviour
+    public class Pathfinder : IPathfindingService
     {
-        [SerializeField] private GridManager grid;
-        public static Pathfinder Instance { get; private set; }
-        private void Awake()
+        private IGridService _gridService;
+        public void Initialize(IGridService gridService)
         {
-            if (Instance == null)
-            {
-                Instance = this;
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
+            _gridService = gridService;
         }
-
+        
         private PathfindingResult FindPathCore(CellPosition startCellPosition)
         {
             var startCoordinates = new Vector2Int(startCellPosition.Row, startCellPosition.Column);
-            int lastRow = grid.RowCount - 1;
+            int lastRow = _gridService.RowCount - 1;
             if (startCoordinates.x == lastRow)
             {
                 return new PathfindingResult 
@@ -77,8 +70,8 @@ namespace BusJamDemo.Utility
                 {
                     Vector2Int neighbor = current + dir;
 
-                    if (neighbor.x < 0 || neighbor.x >= grid.RowCount || neighbor.y < 0 ||
-                        neighbor.y >= grid.ColumnCount)
+                    if (neighbor.x < 0 || neighbor.x >= _gridService.RowCount || neighbor.y < 0 ||
+                        neighbor.y >= _gridService.ColumnCount)
                         continue;
 
                     if (IsBlocked(neighbor.x, neighbor.y))
@@ -100,7 +93,7 @@ namespace BusJamDemo.Utility
             return FindPathCore(startCellPosition).PathFound;
         }
 
-        public List<CellPosition> GetClosestPathToExit(CellPosition startCellPosition)
+        private List<CellPosition> GetClosestPathToExit(CellPosition startCellPosition)
         {
             PathfindingResult result = FindPathCore(startCellPosition);
             if (!result.PathFound)
@@ -119,7 +112,7 @@ namespace BusJamDemo.Utility
 
             while (current != start)
             {
-                var cellData = grid[current.x, current.y];
+                var cellData = _gridService[current.x, current.y];
                 path.Add(cellData.CellPosition);
                 
                 if (!parents.ContainsKey(current))
@@ -135,7 +128,7 @@ namespace BusJamDemo.Utility
 
         private bool IsBlocked(int row, int col)
         {
-            var cellData = grid[row, col]; 
+            var cellData = _gridService[row, col]; 
             if (cellData.HasItem && cellData.HeldItem is IBlocker)
             {
                 return true;
@@ -145,8 +138,13 @@ namespace BusJamDemo.Utility
 
         private bool IsMovePossible(int row, int col)
         {
-            var cellData = grid[row, col];
+            var cellData = _gridService[row, col];
             return cellData.HasItem && cellData.HeldItem is Passenger;
+        }
+
+        public List<CellPosition> FindPath(CellPosition startCellPosition)
+        {
+            return GetClosestPathToExit(startCellPosition);
         }
     }
 }
