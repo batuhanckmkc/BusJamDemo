@@ -19,6 +19,7 @@ GameObject:
   - component: {fileID: 5371608964239696639}
   - component: {fileID: 9064081538133202890}
   - component: {fileID: 8800540761582706939}
+  - component: {fileID: 141031053996247891}
   m_Layer: 0
   m_Name: Systems
   m_TagString: Untagged
@@ -67,9 +68,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88c45c57537445f3ac8914ff43331458, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemPrefabs:
-  - {fileID: 4250074555462496017, guid: 3993f3e6567984ec28dd77f441af7bdf, type: 3}
-  - {fileID: 7789739288362943648, guid: 625f36a4e438049738f9a19454b4a478, type: 3}
 --- !u!114 &5066941014518481626
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -179,3 +177,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f1dd150c5074bf5bbdc07f201492c52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &141031053996247891
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6706360138294754160}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61327adf6dd54c8782982c5a9af417f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  busPrefab: {fileID: 837636465906850450, guid: 15b073ab7ce0b4d68a6cac6a09ec9f39, type: 3}
+  passengerPrefab: {fileID: 4250074555462496017, guid: 3993f3e6567984ec28dd77f441af7bdf, type: 3}
+  tunnelPrefab: {fileID: 7789739288362943648, guid: 625f36a4e438049738f9a19454b4a478, type: 3}
+  cellPrefab: {fileID: 1694531405007404638, guid: 261421a3c439749c78e28da2306d06c6, type: 3}

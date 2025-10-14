@@ -1,4 +1,3 @@
-using System.Linq;
 using UnityEngine;
 using BusJamDemo.LevelLoad;
 using BusJamDemo.Service;
@@ -7,23 +6,23 @@ namespace BusJamDemo.Grid
 {
     public class CellItemSpawner : MonoBehaviour, ICellItemSpawner
     {
-        [SerializeField] private CellItem[] itemPrefabs;
-
         private IGridService _gridService;
         private IPassengerService _passengerService;
         private IPathfindingService _pathfindingService;
         private IBusService _busService;
         private IGameService _gameService;
-        public void Initialize(IGridService gridService, IPassengerService passengerService, IPathfindingService pathfindingService, IBusService busService, IGameService gameService)
+        private IPoolService _poolService;
+        public void Initialize(IGridService gridService, IPassengerService passengerService, IPathfindingService pathfindingService, IBusService busService, IGameService gameService, IPoolService poolService)
         {
             _gridService = gridService;
             _passengerService = passengerService;
             _pathfindingService = pathfindingService;
             _busService = busService;
             _gameService = gameService;
+            _poolService = poolService;
         }
         
-        private CellItem InstantiateAndSetupItem(CellItem prefab, CellContent cellContent, int row, int col, Transform parent)
+        private CellItem GetAndSetupItem<T>(CellContent cellContent, int row, int col, Transform parent) where T : CellItem
         {
             if (row < 0 || row >= _gridService.RowCount || col < 0 || col >= _gridService.ColumnCount)
             {
@@ -39,9 +38,8 @@ namespace BusJamDemo.Grid
             }
             
             var worldPos = cellData.CellPosition.WorldPosition;
-            var cellItem = Instantiate(prefab, worldPos, Quaternion.identity);
-            
-            cellItem.transform.SetParent(parent, true); 
+            var cellItem = _poolService.Get<T>();
+            cellItem.transform.SetPositionAndRotation(worldPos, Quaternion.identity);
             cellData.FillItem(cellItem);
             cellItem.Initialize(cellData, cellContent);
             return cellItem;
@@ -49,14 +47,13 @@ namespace BusJamDemo.Grid
         
         public Passenger SpawnPassenger(PassengerContent content, int row, int col, Transform parent)
         {
-            var passengerPrefab = GetPrefabByContent(content.Type);
-            var passenger = InstantiateAndSetupItem(passengerPrefab, content, row, col, parent) as Passenger;
+            var passenger = GetAndSetupItem<Passenger>(content, row, col, parent) as Passenger;
             
             if (passenger != null)
             {
                 passenger.InitializeServices(_pathfindingService, _gridService, _busService, _gameService);
                 passenger.SetColor();
-                passenger.SetAnimation(PassengerAnimationState.Idle);
+                passenger.TrySetAnimation(PassengerAnimationState.Idle);
                 _passengerService.RegisterPassenger(passenger);
             }
             return passenger;
@@ -64,27 +61,13 @@ namespace BusJamDemo.Grid
 
         public Tunnel SpawnTunnel(TunnelContent content, int row, int col, Transform parent)
         {
-            var tunnelPrefab = GetPrefabByContent(content.Type);
-            var tunnel = InstantiateAndSetupItem(tunnelPrefab, content, row, col, parent) as Tunnel;
+            var tunnel = GetAndSetupItem<Tunnel>(content, row, col, parent) as Tunnel;
             
             if (tunnel != null)
             {
                 // TODO: Tunnel passenger sequence - tunnel.SetPassengerSequence(content.PassengerSequence)
             }
             return tunnel;
-        }
-        
-        private CellItem GetPrefabByContent(CellContentType contentType)
-        {
-            switch (contentType)
-            {
-                case CellContentType.Passenger:
-                    return itemPrefabs.FirstOrDefault(p => p is Passenger);
-                
-                case CellContentType.Tunnel:
-                    return itemPrefabs.FirstOrDefault(p => p is Tunnel); 
-            }
-            return null;
         }
     }
 }

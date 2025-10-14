@@ -12,25 +12,36 @@ namespace BusJamDemo.Grid
         private readonly List<Passenger> _activePassengers = new();
 
         private IGameService _gameService;
-        public void Initialize(IGameService gameService)
+        private IPoolService _poolService;
+        public void Initialize(IGameService gameService, IPoolService poolService)
         {
             _gameService = gameService;
-            
+            _poolService = poolService;
             _gameService.OnGameStateChanged += StopPassengers;
             EventManager.Subscribe(GameplayEvents.LevelLoaded, RecalculateAllPassengerOutlines);
             EventManager<Passenger>.Subscribe(GameplayEvents.OnPassengerMove, OnPassengerMove);
+        }
+
+        private void OnDestroy()
+        {
+            EventManager.Unsubscribe(GameplayEvents.LevelLoaded, RecalculateAllPassengerOutlines);
+            EventManager<Passenger>.Unsubscribe(GameplayEvents.OnPassengerMove, OnPassengerMove);
         }
 
         public void RegisterPassenger(Passenger passenger)
         {
             if (!_activePassengers.Contains(passenger))
             {
-                _allPassengers.Add(passenger);
                 _activePassengers.Add(passenger);
+            }
+
+            if (!_allPassengers.Contains(passenger))
+            {
+                _allPassengers.Add(passenger);
             }
         }
 
-        private void DeregisterPassenger(Passenger passenger)
+        public void DeregisterPassenger(Passenger passenger)
         {
             _activePassengers.Remove(passenger);
         }
@@ -59,12 +70,12 @@ namespace BusJamDemo.Grid
                 }   
             }
         }
-
+        
         public void ClearPassengers()
         {
             foreach (var passenger in _allPassengers)
             {
-                Destroy(passenger.gameObject);
+                _poolService.Release(passenger);
             }
             _allPassengers.Clear();
             _activePassengers.Clear();

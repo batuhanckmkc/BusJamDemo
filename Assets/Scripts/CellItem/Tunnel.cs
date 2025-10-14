@@ -6,7 +6,7 @@ namespace BusJamDemo.Grid
     public class Tunnel : CellItem, IClickable, IBlocker
     {
         public bool CanClick { get; set; }
-        public override void Perform()
+        public void Perform()
         {
             Debug.Log("Spawn Passenger");
         }

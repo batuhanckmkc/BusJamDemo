@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 8578289211591948318}
   - component: {fileID: 8086739704833687010}
   - component: {fileID: 2240119448491318065}
-  - component: {fileID: 3689744341711943364}
+  - component: {fileID: 1694531405007404638}
   m_Layer: 0
-  m_Name: PlaceableCell
+  m_Name: Cell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -106,7 +106,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &3689744341711943364
+--- !u!114 &1694531405007404638
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -115,6 +115,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 3644484030680302789}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: efb148b71b2d473db94df273f33fc198, type: 3}
+  m_Script: {fileID: 11500000, guid: f368ec5e68ef4b7687e2e4d7923e7ff6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

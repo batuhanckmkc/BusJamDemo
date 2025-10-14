@@ -10,12 +10,14 @@ namespace BusJamDemo.LevelLoad
         private IBusService _busService;
         private IPassengerService _passengerService;
         private ICellItemSpawner _cellItemSpawner;
-        public void Initialize(IGridService gridService, IBusService busService, IPassengerService passengerService, ICellItemSpawner cellItemSpawner)
+        private IPoolService _poolService;
+        public void Initialize(IGridService gridService, IBusService busService, IPassengerService passengerService, ICellItemSpawner cellItemSpawner, IPoolService poolService)
         {
             _gridService = gridService;
             _busService = busService;
             _passengerService = passengerService;
             _cellItemSpawner = cellItemSpawner;
+            _poolService = poolService;
         }
         
         public void LoadLevel(LevelData_SO levelData)
@@ -27,13 +29,12 @@ namespace BusJamDemo.LevelLoad
             }
             
             ClearPreviousLevel();
-
+            _poolService.PreloadLevelAssets(levelData);
             if (levelData.GridContents == null || levelData.GridContents.Count == 0)
             {
                 Debug.LogError("[LevelLoader] LevelData's GridContents list is empty or null.");
                 return;
             }
-
             _gridService.GenerateMainCells(levelData.Rows, levelData.Columns, levelData.CellSize);
             _gridService.GenerateBoardingCells(levelData.BoardingCellContent.DefaultBoardingCellCount);
             _busService.CreateBuses(levelData.BusContents);
@@ -74,11 +75,11 @@ namespace BusJamDemo.LevelLoad
             {
                 case CellContentType.Passenger:
                     var pContent = (PassengerContent)content;
-                    _cellItemSpawner.SpawnPassenger(pContent, row, col, _gridService.Transform);
+                    _cellItemSpawner.SpawnPassenger(pContent, row, col);
                     break;
                 case CellContentType.Tunnel:
                     var tContent = (TunnelContent)content;
-                    _cellItemSpawner.SpawnTunnel(tContent, row, col, _gridService.Transform);
+                    _cellItemSpawner.SpawnTunnel(tContent, row, col);
                     break;
                 case CellContentType.Empty:
                 default:

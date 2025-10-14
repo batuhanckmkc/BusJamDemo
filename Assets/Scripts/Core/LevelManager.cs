@@ -8,31 +8,26 @@ namespace BusJamDemo.Core
     public class LevelManager : MonoBehaviour, ILevelService
     {
         [SerializeField] private LevelData_SO[] uniqueLevels;
-
-        private IGameService _gameService;
-        private ILevelLoader _loader;
-        
-        
         private LevelData_SO _currentLevelData;
         private int _currentLevelIndex;
         public LevelData_SO CurrentLevelData => _currentLevelData;
         public int CurrentLevelNumber => _currentLevelIndex + 1;
         private const string LevelSaveKey = "LastPlayedLevel";
-
-
-        public void Initialize(IGameService gameService, ILevelLoader loader)
+        
+        private IPoolService _poolService;
+        private IGameService _gameService;
+        private ILevelLoader _loader;
+        public void Initialize(IGameService gameService, ILevelLoader loader, IPoolService poolService)
         {
             _gameService = gameService;
             _loader = loader;
-            
+            _poolService = poolService;
             _gameService.OnGameStateChanged += OnGameStateChange;
-
         }
 
         public void ActivateSystem()
         {
             InitializeLevelIndex();
-            // LoadCurrentLevel();
         }
         
         private void OnGameStateChange(GameState gameState)

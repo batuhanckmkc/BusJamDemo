@@ -20,7 +20,12 @@ namespace BusJamDemo.Grid
         public Transform Transform => transform;
 
         public float CellSize;
-
+        private IPoolService _poolService;
+        public void Initialize(IPoolService poolService)
+        {
+            _poolService = poolService;
+        }
+        
         private void OnEnable()
         {
             EventManager<ItemPlaceData>.Subscribe(GameplayEvents.OnCellItemPlaced, OnCellItemPlaced);
@@ -45,10 +50,7 @@ namespace BusJamDemo.Grid
                 var cellPosition = new CellPosition(worldPosition);
                 var cellData = new CellData(cellPosition);
                 
-                var boardingCell = Instantiate(cellPrefab, worldPosition, Quaternion.identity, transform);
-                cellData.FillCell(boardingCell);
-                _allCells.Add(boardingCell);
-                _allCellsById.Add(cellData.CellID, cellData); 
+                CreateCell(worldPosition, cellData);
                 _boardingCells.Add(cellData);
             }
         }
@@ -71,21 +73,31 @@ namespace BusJamDemo.Grid
                     var worldPosition = new Vector3(j * CellSize, 0, i * CellSize) - centerOffset;
                     var cellPosition = new CellPosition(worldPosition, i, j);
                     var cellData = new CellData(cellPosition);
-                    
-                    var cell = Instantiate(cellPrefab, worldPosition, Quaternion.identity, transform);
-                    cellData.FillCell(cell);
-                    _allCells.Add(cell);
-                    _allCellsById.Add(cellData.CellID, cellData); 
+
+                    CreateCell(worldPosition, cellData);
                     _mainCells[i, j] = cellData;
                 }
             }
         }
 
+        private void CreateCell(Vector3 worldPosition, CellData cellData)
+        {
+            var cell = _poolService.Get<Cell>();
+            cell.transform.SetPositionAndRotation(worldPosition, Quaternion.identity);
+            cell.CellData = cellData;
+            _allCells.Add(cell);
+            _allCellsById.Add(cellData.CellID, cellData);
+        }
+        
         public void ClearGrid()
         {
             foreach (var cell in _allCells)
             {
-                Destroy(cell.gameObject);
+                if (cell.CellData.HasItem)
+                {
+                    _poolService.Release(cell.CellData.HeldItem);
+                }
+                _poolService.Release(cell);
             }
             _allCells.Clear();
             _boardingCells.Clear();
@@ -111,8 +123,10 @@ namespace BusJamDemo.Grid
 
         private void OnCellItemRemoved(ItemRemoveData removeData)
         {
-            var itemRemovedCell = _allCellsById[removeData.TargetCellData.CellID];
-            itemRemovedCell.EraseItem();
+            if (_allCellsById.TryGetValue(removeData.TargetCellData.CellID, out var itemRemovedCell))
+            {
+                itemRemovedCell.EraseItem();
+            }
         }
     }
     

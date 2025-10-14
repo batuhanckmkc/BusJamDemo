@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace BusJamDemo.BusSystem
 {
-    public class Bus : MonoBehaviour
+    public class Bus : MonoBehaviour, IPoolable
     {
         [SerializeField] private Transform busTransform;
         [SerializeField] private MeshRenderer meshRenderer;
@@ -18,10 +18,12 @@ namespace BusJamDemo.BusSystem
         public Transform BusTransform => busTransform;
         private BusContent _busContent;
         private IGameService _gameService;
-        public void Initialize(BusContent busContent, IGameService gameService)
+        private IPoolService _poolService;
+        public void Initialize(BusContent busContent, IGameService gameService, IPoolService poolService)
         {
             _busContent = busContent;
             _gameService = gameService;
+            _poolService = poolService;
             meshRenderer.material.color = _busContent.ColorType.GetColor();
         }
 
@@ -43,9 +45,17 @@ namespace BusJamDemo.BusSystem
                 EventManager<Bus>.Execute(GameplayEvents.OnBusFull, this);
                 transform.DOMove(new Vector3(15, transform.position.y, transform.position.z), 2f).OnComplete(() =>
                 {
-                    gameObject.SetActive(false);
+                    _poolService.Release(this);
                 });
             }
         }
+
+        public void OnReleaseToPool()
+        {
+            transform.DOKill(true);
+            _passengers.Clear();
+        }
+
+        public void OnGetFromPool() { }
     }
 }

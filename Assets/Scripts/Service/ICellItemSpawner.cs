@@ -6,7 +6,7 @@ namespace BusJamDemo.Service
 {
     public interface ICellItemSpawner
     {
-        Passenger SpawnPassenger(PassengerContent content, int row, int col, Transform parent);
-        Tunnel SpawnTunnel(TunnelContent content, int row, int col, Transform parent);
+        Passenger SpawnPassenger(PassengerContent content, int row, int col, Transform parent = null);
+        Tunnel SpawnTunnel(TunnelContent content, int row, int col, Transform parent = null);
     }
 }

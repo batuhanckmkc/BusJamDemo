@@ -21,11 +21,15 @@ namespace BusJamDemo.BusSystem
         private IGameService _gameService;
         private ILevelService _levelService;
         private IGridService _gridService;
-        public void Initialize(IGameService gameService, ILevelService levelService, IGridService gridService)
+        private IPoolService _poolService;
+        private IPassengerService _passengerService;
+        public void Initialize(IGameService gameService, ILevelService levelService, IGridService gridService, IPoolService poolService, IPassengerService passengerService)
         {
             _gameService = gameService;
             _levelService = levelService;
             _gridService = gridService;
+            _poolService = poolService;
+            _passengerService = passengerService;
             
             EventManager<Bus>.Subscribe(GameplayEvents.OnBusFull, OnBusFull);
         }
@@ -53,9 +57,10 @@ namespace BusJamDemo.BusSystem
                 float spawnXOffset = -totalSpanX;
                 spawnX += spawnXOffset;
 
-                var bus = Instantiate(busParentPrefab, new Vector3(spawnX, 0, spawnZ), Quaternion.identity, transform);
-
-                bus.Initialize(busContents[i], _gameService);
+                var bus = _poolService.Get<Bus>();
+                bus.transform.SetPositionAndRotation(new Vector3(spawnX, 0, spawnZ), Quaternion.identity);
+                
+                bus.Initialize(busContents[i], _gameService, _poolService);
                 _buses.Add(bus);
                 _allBuses.Add(bus);
 
@@ -71,7 +76,7 @@ namespace BusJamDemo.BusSystem
         {
             foreach (var bus in _allBuses)
             {
-                Destroy(bus.gameObject);
+                _poolService.Release(bus);
             }
             _allBuses.Clear();
             _buses.Clear();

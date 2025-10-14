@@ -24,6 +24,7 @@ namespace BusJamDemo.Bootstrap
             var systemsRoot = Object.Instantiate(systemsPrefab);
             Object.DontDestroyOnLoad(systemsRoot);
 
+            var poolManager = systemsRoot.GetComponent<ObjectPoolManager>();
             var gameManager = systemsRoot.GetComponent<GameManager>();
             var timerManager = systemsRoot.GetComponent<TimerManager>();
             var levelManager = systemsRoot.GetComponent<LevelManager>();
@@ -45,15 +46,17 @@ namespace BusJamDemo.Bootstrap
             IPassengerService passengerService = passengerController;
             ILevelLoader levelLoaderService = levelLoader;
             ICellItemSpawner itemSpawnerService = itemSpawner;
+            IPoolService poolService = poolManager;
             
             gameManager.Initialize();
+            gridManager.Initialize(poolService);
             pathfinder.Initialize(gridService);
-            itemSpawner.Initialize(gridService, passengerService, pathfindingService, busService, gameService);
-            levelManager.Initialize(gameService, levelLoaderService);
-            levelLoader.Initialize(gridService, busService, passengerService, itemSpawnerService);
+            itemSpawner.Initialize(gridService, passengerService, pathfindingService, busService, gameService, poolService);
+            levelManager.Initialize(gameService, levelLoaderService, poolService);
+            levelLoader.Initialize(gridService, busService, passengerService, itemSpawnerService, poolService);
             
-            passengerController.Initialize(gameService);
-            busController.Initialize(gameService, levelService, gridService);
+            passengerController.Initialize(gameService, poolService);
+            busController.Initialize(gameService, levelService, gridService, poolService, passengerService);
             timerManager.Initialize(gameService, levelService);
             uiManager.Initialize(gameService, levelService, timerService);
             
