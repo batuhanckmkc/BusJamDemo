@@ -113,6 +113,7 @@ namespace BusJamDemo.Grid
             for (int i = 0; i < path.Count; i++)
             {
                 _followPathSequence.Append(transform.DOMove(path[i].WorldPosition, 0.25f).SetEase(Ease.Linear));
+                _followPathSequence.Join(transform.DOLookAt(path[i].WorldPosition, 0.1f).SetEase(Ease.Linear));
             }
             _followPathSequence.OnComplete(DecidePath);
         }
