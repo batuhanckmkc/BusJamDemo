@@ -18,15 +18,22 @@ namespace BusJamDemo.Grid
         [SerializeField] private SkinnedMeshRenderer skinnedMeshRenderer;
         [SerializeField] private Outline outline;
         [SerializeField] private Animator animator;
-
+        
+        [SerializeField] float moveDuration = 1.5f;
+        [SerializeField] float busBoardScaleOutDuration = 0.15f;
+        [SerializeField] float busBoardScaleInDuration = 0.1f;
+        [SerializeField] float busBoardScaleStartOffset = 0.35f; 
+        
         private static readonly int IdleHash = Animator.StringToHash("Idle");
         private static readonly int RunHash = Animator.StringToHash("Run");
+        
         #endregion
         
         public bool CanClick { get; set; } = true;
         public PassengerContent PassengerContent;
         private PassengerGameState _passengerGameState = PassengerGameState.GridState;
         private Sequence _followPathSequence;
+        private Sequence _getOnBusSequence;
 
         private IPathfindingService _pathfinder;
         private IGridService _gridService;
@@ -151,10 +158,17 @@ namespace BusJamDemo.Grid
             TrySetAnimation(PassengerAnimationState.Run);
             _busService.CurrentBus.GetOn(this);
             EventManager<ItemRemoveData>.Execute(GameplayEvents.OnCellItemRemoved, new ItemRemoveData(CellData));
-            transform.DOMove(_busService.StopPosition, 2f).OnComplete(() =>
+            
+            _getOnBusSequence = DOTween.Sequence();
+            _getOnBusSequence.Append(transform.DOMove(_busService.StopPosition, moveDuration));
+            _getOnBusSequence.Insert(moveDuration - busBoardScaleStartOffset, transform.DOScale(Vector3.zero, busBoardScaleOutDuration));
+            _getOnBusSequence.AppendCallback(() =>
             {
                 transform.SetParent(_busService.CurrentBus.transform);
                 transform.localPosition = _busService.CurrentBus.TargetSeat; 
+            });
+            _getOnBusSequence.Append(transform.DOScale(Vector3.one, busBoardScaleInDuration).SetEase(Ease.InOutBack)).OnComplete(()=>
+            {
                 _busService.CurrentBus.CheckBusState();
                 SetState(PassengerGameState.BusState);
                 UpdateCellData(null);
@@ -172,7 +186,7 @@ namespace BusJamDemo.Grid
             targetBoardingCell.FillItem(this);
             UpdateCellData(targetBoardingCell);
             SetState(PassengerGameState.BoardingState);
-            transform.DOMove(targetBoardingCell.CellPosition.WorldPosition, 1f).OnComplete(() =>
+            transform.DOMove(targetBoardingCell.CellPosition.WorldPosition, moveDuration).OnComplete(() =>
             {
                 TrySetAnimation(PassengerAnimationState.Idle);
                 if (_gridService.AllBoardingCellsIsBusy())
@@ -191,6 +205,7 @@ namespace BusJamDemo.Grid
         {
             transform.DOKill();
             _followPathSequence.Kill();
+            _getOnBusSequence.Kill();
             CanClick = true;
             _passengerGameState = PassengerGameState.GridState;
             EventManager.Unsubscribe(GameplayEvents.OnBusArrivedToStop, CheckPassengerAvailability);
