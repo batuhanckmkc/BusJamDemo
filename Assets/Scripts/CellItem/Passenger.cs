@@ -28,7 +28,9 @@ namespace BusJamDemo.Grid
         private static readonly int RunHash = Animator.StringToHash("Run");
         
         #endregion
-        
+
+        public int ID;
+        private static int _nextID;
         public bool CanClick { get; set; } = true;
         public PassengerContent PassengerContent;
         private PassengerGameState _passengerGameState = PassengerGameState.GridState;
@@ -53,6 +55,7 @@ namespace BusJamDemo.Grid
         public override void Initialize(CellData cellData, CellContent cellContent)
         {
             PassengerContent = cellContent as PassengerContent;
+            ID = _nextID++;
             base.Initialize(cellData, cellContent);
         }
 
@@ -94,6 +97,13 @@ namespace BusJamDemo.Grid
         private void UpdateCellData(CellData cellData)
         {
             CellData = cellData;
+        }
+
+        public void InstantMove()
+        {
+            EventManager<ItemRemoveData>.Execute(GameplayEvents.OnCellItemRemoved, new ItemRemoveData(CellData));
+            EventManager<Passenger>.Execute(GameplayEvents.OnPassengerMove, this);
+            SkipDecidePath();
         }
         
         public void HandleClick()
@@ -137,7 +147,60 @@ namespace BusJamDemo.Grid
             {
                 return;
             }
-            MoveToBus();
+
+            if (GameManager.ResumeGame)
+            {
+                SkipToBus();
+            }
+            else
+            {
+                MoveToBus();
+            }
+        }
+
+        private void SkipDecidePath()
+        {
+            var canGetOn = _busService.CurrentBus.CanGetOn(this);
+            if (canGetOn)
+            {
+                SkipToBus();
+            }
+            else
+            {
+                SkipToCell();
+            }
+        }
+
+        private void SkipToBus()
+        {
+            _busService.CurrentBus.GetOn(this);
+            EventManager<ItemRemoveData>.Execute(GameplayEvents.OnCellItemRemoved, new ItemRemoveData(CellData));
+            
+            transform.SetParent(_busService.CurrentBus.transform);
+            transform.localPosition = _busService.CurrentBus.TargetSeat;
+            
+            _busService.CurrentBus.CheckBusState();
+            SetState(PassengerGameState.BusState);
+            UpdateCellData(null);
+            TrySetAnimation(PassengerAnimationState.Idle);
+        }
+
+        private void SkipToCell()
+        {
+            var targetBoardingCell = _gridService.GetEligibleBoardingCell();
+            if (targetBoardingCell == null)
+            {
+                return;
+            }
+            targetBoardingCell.FillItem(this);
+            UpdateCellData(targetBoardingCell);
+            SetState(PassengerGameState.BoardingState);
+            transform.position = targetBoardingCell.CellPosition.WorldPosition;
+            TrySetAnimation(PassengerAnimationState.Idle);
+            if (_gridService.AllBoardingCellsIsBusy())
+            {
+                _gameService.UpdateGameState(GameState.LevelFail);
+            }
         }
         
         private void DecidePath()

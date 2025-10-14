@@ -67,7 +67,15 @@ namespace BusJamDemo.BusSystem
                     CurrentBus = bus;
                 }
             }
-            MoveBusesToStop();
+
+            if (GameManager.ResumeGame)
+            {
+                SkipBusMove();
+            }
+            else
+            {
+                MoveBusesToStop();
+            }
         }
 
         public void ClearBuses()
@@ -86,7 +94,14 @@ namespace BusJamDemo.BusSystem
             if (_buses.Count > 0)
             {
                 CurrentBus = _buses[0];
-                MoveBusesToStop(); 
+                if (GameManager.ResumeGame)
+                {
+                    SkipBusMove();
+                }
+                else
+                {
+                    MoveBusesToStop();
+                }
             }
             else
             {
@@ -121,6 +136,28 @@ namespace BusJamDemo.BusSystem
             {
                 EventManager.Execute(GameplayEvents.OnBusArrivedToStop);
             });
+        }
+
+        public void SkipBusMove()
+        {
+            var levelData = _levelService.CurrentLevelData;
+            float spacing = levelData.BusSpacingX;
+            float busWidth = busParentPrefab.BusTransform.localScale.x;
+
+            float targetZ = _gridService.BoardingCells[^1].CellPosition.WorldPosition.z + levelData.BusSpawnDistance.z;
+            float totalItemWidth = busWidth + spacing;
+            for (int i = 0; i < _buses.Count; i++)
+            {
+                float targetX = -i * totalItemWidth;
+                Vector3 targetPos = new Vector3(targetX, 0, targetZ);
+                if (i == 0)
+                {
+                    _stopPosition = targetPos;
+                }
+
+                _buses[i].transform.position = targetPos;
+                EventManager.Execute(GameplayEvents.OnBusArrivedToStop);
+            }
         }
     }
 }

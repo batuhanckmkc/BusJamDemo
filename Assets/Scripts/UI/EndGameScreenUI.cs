@@ -1,5 +1,7 @@
 using BusJamDemo.Core;
+using BusJamDemo.Grid;
 using BusJamDemo.Service;
+using BusJamDemo.Utility;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
@@ -39,12 +41,14 @@ namespace BusJamDemo.UI
             switch (newState)
             {
                 case GameState.LevelFail:
+                    IntListFileSaver.DeleteIntListFile();
                     resultText.text = "Level Fail!";
                     restartButton.gameObject.SetActive(true);
                     nextLevelButton.gameObject.SetActive(false);
                     Show();
                     break;
                 case GameState.LevelComplete:
+                    IntListFileSaver.DeleteIntListFile();
                     resultText.text = "Level Success!";
                     restartButton.gameObject.SetActive(false);
                     nextLevelButton.gameObject.SetActive(true);

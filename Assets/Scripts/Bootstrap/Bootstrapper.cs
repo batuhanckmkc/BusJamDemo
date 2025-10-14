@@ -54,7 +54,7 @@ namespace BusJamDemo.Bootstrap
             levelManager.Initialize(gameService, levelLoaderService);
             levelLoader.Initialize(gridService, busService, passengerService, itemSpawnerService, poolService);
             
-            passengerController.Initialize(gameService, poolService);
+            passengerController.Initialize(gameService, poolService, levelService);
             busController.Initialize(gameService, levelService, gridService, poolService);
             timerManager.Initialize(gameService, levelService);
             uiManager.Initialize(gameService, levelService, timerService);

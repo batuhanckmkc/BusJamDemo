@@ -10,8 +10,10 @@ namespace BusJamDemo.Core
         public GameState CurrentState { get; private set; } = GameState.None;
         public event Action<GameState> OnGameStateChanged;
 
+        public static bool ResumeGame;
         public void Initialize()
         {
+            ResumeGame = IntListFileSaver.HasData();
             EventManager.Subscribe(GameplayEvents.SystemInitialized, StartGame);
         }
         private void StartGame() => UpdateGameState(GameState.StartScreen);

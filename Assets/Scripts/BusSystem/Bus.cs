@@ -11,10 +11,10 @@ namespace BusJamDemo.BusSystem
 {
     public class Bus : MonoBehaviour, IPoolable
     {
-        public Vector3 TargetSeat => _seatTransforms[_passengers.Count - 1];
-
         [SerializeField] private Transform busTransform;
         [SerializeField] private MeshRenderer meshRenderer;
+        public Vector3 TargetSeat => _seatTransforms[_passengers.Count - 1];
+        private readonly List<Vector3> _seatTransforms = new();
         private readonly List<Passenger> _passengers = new ();
         private bool HasEmptySeat => _passengers.Count < _busContent.RequiredPassengerSequence.Count;
         private float _seatSpacing;
@@ -31,7 +31,6 @@ namespace BusJamDemo.BusSystem
             CalculateTargetSeatPosition();
         }
 
-        private List<Vector3> _seatTransforms = new();
         private void CalculateTargetSeatPosition()
         {
             var busScaleX = busTransform.localScale.x;
@@ -63,14 +62,22 @@ namespace BusJamDemo.BusSystem
 
         public void CheckBusState()
         {
-            //TODO Refactor child count control
             if (!HasEmptySeat && transform.childCount == _busContent.RequiredPassengerSequence.Count + 1 && _gameService.CurrentState != GameState.LevelFail)
             {
                 EventManager<Bus>.Execute(GameplayEvents.OnBusFull, this);
-                transform.DOMove(new Vector3(15, transform.position.y, transform.position.z), 2f).OnComplete(() =>
+                var targetPos = new Vector3(15, transform.position.y, transform.position.z);
+                if (GameManager.ResumeGame)
                 {
+                    transform.position = targetPos;
                     _poolService.Release(this);
-                });
+                }
+                else
+                {
+                    transform.DOMove(new Vector3(15, transform.position.y, transform.position.z), 2f).OnComplete(() =>
+                    {
+                        _poolService.Release(this);
+                    });
+                }
             }
         }
 
