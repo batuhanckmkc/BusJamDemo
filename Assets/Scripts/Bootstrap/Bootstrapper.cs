@@ -52,11 +52,11 @@ namespace BusJamDemo.Bootstrap
             gridManager.Initialize(poolService);
             pathfinder.Initialize(gridService);
             itemSpawner.Initialize(gridService, passengerService, pathfindingService, busService, gameService, poolService);
-            levelManager.Initialize(gameService, levelLoaderService, poolService);
+            levelManager.Initialize(gameService, levelLoaderService);
             levelLoader.Initialize(gridService, busService, passengerService, itemSpawnerService, poolService);
             
             passengerController.Initialize(gameService, poolService);
-            busController.Initialize(gameService, levelService, gridService, poolService, passengerService);
+            busController.Initialize(gameService, levelService, gridService, poolService);
             timerManager.Initialize(gameService, levelService);
             uiManager.Initialize(gameService, levelService, timerService);
             

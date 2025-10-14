@@ -8,7 +8,6 @@ namespace BusJamDemo.Grid
 {
     public class GridManager : MonoBehaviour, IGridService
     {
-        [SerializeField] private Cell cellPrefab;
         private CellData[,] _mainCells;
         private readonly List<CellData> _boardingCells = new();
         public List<CellData> BoardingCells => _boardingCells;
@@ -19,7 +18,7 @@ namespace BusJamDemo.Grid
         public int ColumnCount { get; private set; }
         public Transform Transform => transform;
 
-        public float CellSize;
+        private float _cellSize;
         private IPoolService _poolService;
         public void Initialize(IPoolService poolService)
         {
@@ -41,12 +40,12 @@ namespace BusJamDemo.Grid
         public void GenerateBoardingCells(int boardingCellCount)
         {
             var boardingCellsDistanceMultiplier = 3;
-            var cellsWidth = CellSize * (boardingCellCount - 1);
+            var cellsWidth = _cellSize * (boardingCellCount - 1);
             var topCellZ = _mainCells[RowCount - 1, 0].CellPosition.WorldPosition.z;
             var centerOffset = new Vector3(cellsWidth / 2, 0, 0);
             for (int i = 0; i < boardingCellCount; i++)
             {
-                var worldPosition = new Vector3(i * CellSize, 0, topCellZ + CellSize * boardingCellsDistanceMultiplier) - centerOffset;
+                var worldPosition = new Vector3(i * _cellSize, 0, topCellZ + _cellSize * boardingCellsDistanceMultiplier) - centerOffset;
                 var cellPosition = new CellPosition(worldPosition);
                 var cellData = new CellData(cellPosition);
                 
@@ -59,18 +58,18 @@ namespace BusJamDemo.Grid
         {
             RowCount = rows;
             ColumnCount = columns;
-            CellSize = cellSize;
+            _cellSize = cellSize;
             
             _mainCells = new CellData[RowCount, ColumnCount];
-            var gridWidth = CellSize * (ColumnCount - 1);
-            var gridHeight = CellSize * (RowCount - 1);
+            var gridWidth = _cellSize * (ColumnCount - 1);
+            var gridHeight = _cellSize * (RowCount - 1);
             var centerOffset = new Vector3(gridWidth / 2, 0, gridHeight / 2);
             
             for (int i = 0; i < RowCount; i++)
             {
                 for (int j = 0; j < ColumnCount; j++)
                 {
-                    var worldPosition = new Vector3(j * CellSize, 0, i * CellSize) - centerOffset;
+                    var worldPosition = new Vector3(j * _cellSize, 0, i * _cellSize) - centerOffset;
                     var cellPosition = new CellPosition(worldPosition, i, j);
                     var cellData = new CellData(cellPosition);
 

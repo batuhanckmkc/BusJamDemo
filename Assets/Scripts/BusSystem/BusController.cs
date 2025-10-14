@@ -22,14 +22,12 @@ namespace BusJamDemo.BusSystem
         private ILevelService _levelService;
         private IGridService _gridService;
         private IPoolService _poolService;
-        private IPassengerService _passengerService;
-        public void Initialize(IGameService gameService, ILevelService levelService, IGridService gridService, IPoolService poolService, IPassengerService passengerService)
+        public void Initialize(IGameService gameService, ILevelService levelService, IGridService gridService, IPoolService poolService)
         {
             _gameService = gameService;
             _levelService = levelService;
             _gridService = gridService;
             _poolService = poolService;
-            _passengerService = passengerService;
             
             EventManager<Bus>.Subscribe(GameplayEvents.OnBusFull, OnBusFull);
         }
