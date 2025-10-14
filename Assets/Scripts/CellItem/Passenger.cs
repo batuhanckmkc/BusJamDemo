@@ -220,6 +220,7 @@ namespace BusJamDemo.Grid
         {
             TrySetAnimation(PassengerAnimationState.Run);
             _busService.CurrentBus.GetOn(this);
+            Vector3 targetSeatLocalPosition = _busService.CurrentBus.TargetSeat;
             EventManager<ItemRemoveData>.Execute(GameplayEvents.OnCellItemRemoved, new ItemRemoveData(CellData));
             
             _getOnBusSequence = DOTween.Sequence();
@@ -228,7 +229,7 @@ namespace BusJamDemo.Grid
             _getOnBusSequence.AppendCallback(() =>
             {
                 transform.SetParent(_busService.CurrentBus.transform);
-                transform.localPosition = _busService.CurrentBus.TargetSeat; 
+                transform.localPosition = targetSeatLocalPosition;
             });
             _getOnBusSequence.Append(transform.DOScale(Vector3.one, busBoardScaleInDuration).SetEase(Ease.InOutBack)).OnComplete(()=>
             {
