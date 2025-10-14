@@ -11,7 +11,6 @@ namespace BusJamDemo.Bootstrap
 {
     public class Bootstrapper
     {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         public static void Execute() 
         {
             var systemsPrefab = Resources.Load<GameObject>("Systems");
