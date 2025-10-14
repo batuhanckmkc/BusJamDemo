@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using BusJamDemo.BusSystem;
 using BusJamDemo.Core;
@@ -39,6 +40,8 @@ namespace BusJamDemo.Grid
             _gridService = gridService;
             _busService = busService;
             _gameService = gameService;
+            
+            _gameService.OnGameStateChanged += OnGameStateChanged;
         }
         
         public override void Initialize(CellData cellData, CellContent cellContent)
@@ -47,7 +50,20 @@ namespace BusJamDemo.Grid
             EventManager.Subscribe(GameplayEvents.OnBusArrivedToStop, CheckPassengerAvailability);
             base.Initialize(cellData, cellContent);
         }
+
+        private void OnGameStateChanged(GameState newState)
+        {
+            if (newState == GameState.LevelFail)
+            {
+                EventManager.Unsubscribe(GameplayEvents.OnBusArrivedToStop, CheckPassengerAvailability);
+            }
+        }
         
+        private void OnDestroy()
+        {
+            EventManager.Unsubscribe(GameplayEvents.OnBusArrivedToStop, CheckPassengerAvailability);
+        }
+
         public void SetAnimation(PassengerAnimationState animationState)
         {
             switch (animationState)

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using BusJamDemo.Core;
 using BusJamDemo.LevelLoad;
@@ -11,6 +12,7 @@ namespace BusJamDemo.BusSystem
     public class BusController : MonoBehaviour, IBusService
     {
         [SerializeField] private Bus busParentPrefab;
+        private readonly List<Bus> _allBuses = new();
         private readonly List<Bus> _buses = new();
         private Vector3 _stopPosition;
         public Bus CurrentBus { get; private set; }
@@ -26,6 +28,11 @@ namespace BusJamDemo.BusSystem
             _gridService = gridService;
             
             EventManager<Bus>.Subscribe(GameplayEvents.OnBusFull, OnBusFull);
+        }
+
+        private void OnDestroy()
+        {
+            EventManager<Bus>.Unsubscribe(GameplayEvents.OnBusFull, OnBusFull);
         }
 
         public void CreateBuses(List<BusContent> busContents)
@@ -48,8 +55,9 @@ namespace BusJamDemo.BusSystem
 
                 var bus = Instantiate(busParentPrefab, new Vector3(spawnX, 0, spawnZ), Quaternion.identity, transform);
 
-                bus.Initialize(busContents[i]);
+                bus.Initialize(busContents[i], _gameService);
                 _buses.Add(bus);
+                _allBuses.Add(bus);
 
                 if (i == 0)
                 {
@@ -61,10 +69,11 @@ namespace BusJamDemo.BusSystem
 
         public void ClearBuses()
         {
-            foreach (var bus in _buses)
+            foreach (var bus in _allBuses)
             {
                 Destroy(bus.gameObject);
             }
+            _allBuses.Clear();
             _buses.Clear();
         }
         
