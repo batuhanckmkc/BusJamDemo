@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Level_2
   m_EditorClassIdentifier: 
   LevelIndex: 2
-  Time: 60
+  Time: 55
   BusSpawnDistance: {x: 0, y: 0, z: 5}
   BusSpacingX: 1
   BoardingCellContent:
