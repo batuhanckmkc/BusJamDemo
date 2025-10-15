@@ -20,6 +20,7 @@ GameObject:
   - component: {fileID: 9064081538133202890}
   - component: {fileID: 8800540761582706939}
   - component: {fileID: 141031053996247891}
+  - component: {fileID: 3058769587887449902}
   m_Layer: 0
   m_Name: Systems
   m_TagString: Untagged
@@ -54,8 +55,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 263feab7b39dd474083b9365ef347df0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cellPrefab: {fileID: 3689744341711943364, guid: 261421a3c439749c78e28da2306d06c6, type: 3}
-  CellSize: 1
 --- !u!114 &5557007431640943845
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -123,12 +122,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b3791858c11425ea4a201f5d9d4d3d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uniqueLevels:
-  - {fileID: 11400000, guid: 95b61b8b0a21d4efa981613023d48c16, type: 2}
-  - {fileID: 11400000, guid: eff81e45ceff5448aaa65d06a80cc32f, type: 2}
-  - {fileID: 11400000, guid: 6d440f300bb79499c8cf9e2a0a472e51, type: 2}
-  - {fileID: 11400000, guid: 1e98967fea4004900aa09dedd51ae429, type: 2}
-  - {fileID: 11400000, guid: da02893c48a724b808faf92d1ef853e8, type: 2}
 --- !u!114 &5067770738571027924
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -193,3 +186,22 @@ MonoBehaviour:
   passengerPrefab: {fileID: 4250074555462496017, guid: 3993f3e6567984ec28dd77f441af7bdf, type: 3}
   tunnelPrefab: {fileID: 7789739288362943648, guid: 625f36a4e438049738f9a19454b4a478, type: 3}
   cellPrefab: {fileID: 1694531405007404638, guid: 261421a3c439749c78e28da2306d06c6, type: 3}
+--- !u!114 &3058769587887449902
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6706360138294754160}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b420cb0c2c245c6a709571d3ba689eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  basePosition: {x: 0, y: 10, z: -7}
+  baseRotation: {x: 45, y: 0, z: 0}
+  baseFOV: 60
+  baseHeight: 10
+  baseDistance: 7
+  heightFactor: 0.5
+  distanceFactor: 0.5

@@ -33,6 +33,7 @@ namespace BusJamDemo.Bootstrap
             var passengerController = systemsRoot.GetComponent<PassengerController>();
             var itemSpawner = systemsRoot.GetComponent<CellItemSpawner>();
             var levelLoader = systemsRoot.GetComponent<LevelLoader>();
+            var cameraAdjuster = systemsRoot.GetComponent<CameraAdjuster>();
 
             var pathfinder = new Pathfinder();
 
@@ -58,6 +59,7 @@ namespace BusJamDemo.Bootstrap
             busController.Initialize(gameService, levelService, gridService, poolService);
             timerManager.Initialize(gameService, levelService);
             uiManager.Initialize(gameService, levelService, timerService);
+            cameraAdjuster.Initialize(levelService);
             
             levelManager.ActivateSystem();
             uiManager.ActivateSystem();
