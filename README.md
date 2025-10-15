@@ -37,12 +37,13 @@ A custom editor was developed for LevelData_SO objects to speed up level creatio
 Key features:
 
 Visual grid generation in the Inspector based on row/column settings
-
 Click-based assignment of cell type and content (Passenger, Tunnel, Empty)
-
 Editing of buses and RequiredPassengerSequence
-
 Immediate saving of changes to the ScriptableObject using SerializeReference
+
+▶️ Running the Game
+
+You can start the game by opening the Assets/Scenes/GameScene scene and pressing Play.
 
 🎮 Gameplay
 
